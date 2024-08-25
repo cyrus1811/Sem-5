@@ -1,153 +1,154 @@
-body {
-    font-family: 'Open Sans', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #000;
-    color: #fff;
-    background-image: url('TE MINI\pexels-philippedonn-1169754.jpg'); 
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+html {
+  scroll-behavior: smooth;
 }
 
-
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+  background-image: url("./pexels-philippedonn-1169754.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+}
 
 header {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #f0f0f0;
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 2px solid #444;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #f0f0f0;
+  padding: 20px 0;
+  text-align: center;
+  border-bottom: 2px solid #444;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 nav ul li {
-    display: inline;
-    margin-right: 20px;
+  display: inline;
+  margin-right: 20px;
 }
 
 nav ul li a {
-    color: #f0f0f0;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 5px 10px;
-    transition: background-color 0.3s;
+  color: #f0f0f0;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 5px 10px;
+  transition: background-color 0.3s;
 }
 
 nav ul li a:hover {
-    background-color: #444;
-    border-radius: 5px;
+  background-color: #444;
+  border-radius: 5px;
 }
 
 /* Hero Section */
 #hero {
-    text-align: center;
-    padding: 100px 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    background-image: url('https://example.com/space-hero.jpg'); /* Replace with an actual space image */
-    background-size: cover;
-    background-position: center;
-    color: #ffe81f;
+  text-align: center;
+  padding: 100px 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  background-image: url("https://example.com/space-hero.jpg"); /* Replace with an actual space image */
+  background-size: cover;
+  background-position: center;
+  color: #ffe81f;
 }
 
 #hero h2 {
-    font-size: 3em;
-    margin-bottom: 20px;
+  font-size: 3em;
+  margin-bottom: 20px;
 }
 
 #hero p {
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 
 /* Featured Planets Section */
 #featured-planets {
-    padding: 50px 20px;
-    background-color: rgba(0, 0, 0, 0.8);
+  padding: 50px 20px;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 #featured-planets h2 {
-    text-align: center;
-    color: #ffe81f;
-    margin-bottom: 30px;
+  text-align: center;
+  color: #ffe81f;
+  margin-bottom: 30px;
 }
 
 .planet-container {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
 }
 
 .planet {
-    width: 30%;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    transition: transform 0.3s;
+  width: 30%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  transition: transform 0.3s;
 }
 
 .planet img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 15px;
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
 
 .planet h3 {
-    color: #ffe81f;
-    margin-bottom: 10px;
+  color: #ffe81f;
+  margin-bottom: 10px;
 }
 
 .planet p {
-    color: #ddd;
+  color: #ddd;
 }
 
 .planet:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 /* Main Section */
 main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 section {
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.8); /* Adjusted for more transparency */
-    margin: 20px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.8); /* Adjusted for more transparency */
+  margin: 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-
 h2 {
-    color: #ffe81f; 
-    border-bottom: 2px solid #ffe81f;
-    padding-bottom: 10px;
+  color: #ffe81f;
+  border-bottom: 2px solid #ffe81f;
+  padding-bottom: 10px;
 }
 
 p {
-    line-height: 1.6;
+  line-height: 1.6;
 }
 
 /* Footer */
 footer {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #f0f0f0;
-    text-align: center;
-    padding: 10px 0;
-    border-top: 2px solid #444;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
-    position: fixed;
-    width: 100%;
-    bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #f0f0f0;
+  text-align: center;
+  padding: 10px 0;
+  border-top: 2px solid #444;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+  position: fixed;
+  width: 100%;
+  bottom: 0;
 }
