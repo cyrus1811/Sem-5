@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gravity Simulation: Earth vs Exoplanet</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  >
+</head>
+
+<body>
+    <!-- Dropdown for exoplanet gravity, custom input, and run/stop buttons -->
+    <div id="controls">
+        <label for="gravitySelect">Exoplanet Gravity: </label>
+        <select id="gravitySelect">
+            <option value="-1.6">1.6 m/s² (Moon)</option>
+            <option value="-4.5" selected>4.5 m/s² (Example Exoplanet)</option>
+            <option value="-9.8">9.8 m/s² (Earth)</option>
+            <option value="-24.8">24.8 m/s² (Jupiter)</option>
+        </select>
+        <input type="number" id="customGravityInput" placeholder="Custom gravity (m/s²)" />
+        <button id="applyCustomGravity">Apply Custom Gravity</button>
+        <button id="runSimulationButton">Run Simulation</button>
+        <button id="stopSimulationButton">Stop Simulation</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene, Camera, Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Gravity Constants
+        const gravityEarth = -9.8; // m/s^2
+        let gravityExoplanet = -4.5; // Default exoplanet gravity
+        let isRunning = false; // Simulation is initially not running
+
+        // Spheres (Objects in free fall)
+        const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+        const earthMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        const exoplanetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+        // Earth Sphere
+        const earthSphere = new THREE.Mesh(sphereGeometry, earthMaterial);
+        earthSphere.position.set(-3, 20, 0); // Increased initial height and positioned for side-by-side view
+        scene.add(earthSphere);
+
+        // Exoplanet Sphere
+        const exoplanetSphere = new THREE.Mesh(sphereGeometry, exoplanetMaterial);
+        exoplanetSphere.position.set(3, 20, 0); // Increased initial height and positioned for side-by-side view
+        scene.add(exoplanetSphere);
+
+        // Ground Planes (One for Each Side)
+        const groundGeometry = new THREE.PlaneGeometry(5, 5);
+        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
+
+        // Earth Ground Plane
+        const earthGround = new THREE.Mesh(groundGeometry, groundMaterial);
+        earthGround.rotation.x = Math.PI / 2;
+        earthGround.position.set(-3, 0, 0);
+        scene.add(earthGround);
+
+        // Exoplanet Ground Plane
+        const exoplanetGround = new THREE.Mesh(groundGeometry, groundMaterial);
+        exoplanetGround.rotation.x = Math.PI / 2;
+        exoplanetGround.position.set(3, 0, 0);
+        scene.add(exoplanetGround);
+
+        // Camera Position
+        camera.position.z = 25;
+        camera.position.y = 5; // Slightly raised to see both spheres and ground planes
+
+        // Simulation Variables
+        let timeElapsed = 0;
+        const timeStep = 0.016; // Approximate 60fps
+        const initialHeight = 20; // Starting height for the spheres
+
+        // UI Elements
+        const gravitySelect = document.getElementById('gravitySelect');
+        const customGravityInput = document.getElementById('customGravityInput');
+        const applyCustomGravity = document.getElementById('applyCustomGravity');
+        const runSimulationButton = document.getElementById('runSimulationButton');
+        const stopSimulationButton = document.getElementById('stopSimulationButton');
+
+        // Dropdown to update exoplanet gravity
+        gravitySelect.addEventListener('change', (event) => {
+            gravityExoplanet = parseFloat(event.target.value);
+            resetSimulation();
+        });
+
+        // Apply custom gravity from input
+        applyCustomGravity.addEventListener('click', () => {
+            const customGravity = parseFloat(customGravityInput.value);
+            if (!isNaN(customGravity)) {
+                gravityExoplanet = customGravity;
+                resetSimulation();
+            }
+        });
+
+        // Run and Stop Simulation Buttons
+        runSimulationButton.addEventListener('click', () => {
+            isRunning = true; // Start the simulation
+            animate(); // Start animation loop if not already running
+        });
+
+        stopSimulationButton.addEventListener('click', () => {
+            isRunning = false; // Stop the simulation
+        });
+
+        // Reset function to reposition spheres and reset time
+        function resetSimulation() {
+            timeElapsed = 0;
+            earthSphere.position.y = initialHeight;
+            exoplanetSphere.position.y = initialHeight;
+        }
+
+        // Animation Loop
+        function animate() {
+            if (!isRunning) return; // Stop the animation if not running
+
+            requestAnimationFrame(animate);
+
+            // Calculate fall distances
+            const earthFallDistance = 0.5 * gravityEarth * Math.pow(timeElapsed, 2);
+            const exoplanetFallDistance = 0.5 * gravityExoplanet * Math.pow(timeElapsed, 2);
+
+            // Update y-position of each sphere until they reach the ground
+            earthSphere.position.y = Math.max(initialHeight + earthFallDistance, 0);
+            exoplanetSphere.position.y = Math.max(initialHeight + exoplanetFallDistance, 0);
+
+            // Reset position to create a looping effect once they reach the ground
+            if (earthSphere.position.y <= 0 && exoplanetSphere.position.y <= 0) {
+                resetSimulation();
+            }
+
+            // Increase time for the next frame
+            timeElapsed += timeStep;
+
+            // Render the scene
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+
+</html>
