@@ -3,93 +3,286 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Gravity Simulation: Earth vs Exoplanet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity Simulator Pro</title>
     <style>
-        body {
-            margin: 0;
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #8000ff;
+            --dark-bg: #0a0a1f;
+            --light-bg: rgba(20, 20, 50, 0.8);
+            --border-color: rgba(255, 255, 255, 0.2);
         }
 
-        #controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1;
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            overflow: hidden;
         }
 
         canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .controls-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            padding: 1rem;
+        }
+
+        .glassmorphism {
+            background: var(--light-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+
+        .title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            color: #a0aec0;
+        }
+
+        select,
+        input {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            width: 200px;
+            cursor: pointer;
+        }
+
+        select option {
+            background: var(--dark-bg);
+            color: #fff;
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(128, 0, 255, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .planet-info-container {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .planet-info-card {
+            background: var(--light-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .planet-info-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 0.75rem;
+            z-index: -1;
+        }
+
+        .planet-info {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 200px;
+            background: var(--dark-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .planet-info-card:hover .planet-info {
             display: block;
         }
+
+        @media (max-width: 768px) {
+            .controls-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select,
+            input {
+                width: 100%;
+            }
+        }
     </style>
-    <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
-  >
 </head>
 
 <body>
-    <!-- Dropdown for exoplanet gravity, custom input, and run/stop buttons -->
-    <div id="controls">
-        <label for="gravitySelect">Exoplanet Gravity: </label>
-        <select id="gravitySelect">
-            <option value="-1.6">1.6 m/s² (Moon)</option>
-            <option value="-4.5" selected>4.5 m/s² (Example Exoplanet)</option>
-            <option value="-9.8">9.8 m/s² (Earth)</option>
-            <option value="-24.8">24.8 m/s² (Jupiter)</option>
-        </select>
-        <input type="number" id="customGravityInput" placeholder="Custom gravity (m/s²)" />
-        <button id="applyCustomGravity">Apply Custom Gravity</button>
-        <button id="runSimulationButton">Run Simulation</button>
-        <button id="stopSimulationButton">Stop Simulation</button>
+    <div class="controls-panel">
+        <div class="glassmorphism">
+            <h1 class="title">Gravity Simulator Pro</h1>
+            <p class="subtitle">Compare gravitational effects across celestial bodies</p>
+            <div class="controls-container">
+                <div class="control-group">
+                    <label for="gravitySelect">Select Celestial Body</label>
+                    <select id="gravitySelect">
+                        <option value="-1.6">Moon (1.6 m/s²)</option>
+                        <option value="-4.5" selected>Exoplanet (4.5 m/s²)</option>
+                        <option value="-9.8">Earth (9.8 m/s²)</option>
+                        <option value="-24.8">Jupiter (24.8 m/s²)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="customGravityInput">Custom Gravity (m/s²)</label>
+                    <input type="number" id="customGravityInput" placeholder="Enter value...">
+                </div>
+                <button id="applyCustomGravity">Apply</button>
+                <button id="runSimulationButton">Run</button>
+                <button id="stopSimulationButton">Stop</button>
+            </div>
+        </div>
+    </div>
+    <div class="planet-info-container">
+        <div class="planet-info-card">
+            <div class="planet-name">Earth</div>
+            <div class="planet-info">
+                <p>Gravity: 9.8 m/s²</p>
+                <p>Reference planet for comparison</p>
+            </div>
+        </div>
+        <div class="planet-info-card">
+            <div class="planet-name">Variable Planet</div>
+            <div class="planet-info">
+                <p>Gravity: Variable</p>
+                <p>Adjustable gravity for comparison</p>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         // Scene, Camera, Renderer
         const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a1f);
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 1);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+        const earthMaterial = new THREE.MeshPhongMaterial({
+            color: 0x4287f5,
+            shininess: 90,
+            emissive: 0x1a4c94,
+            emissiveIntensity: 0.2
+        });
+        const exoplanetMaterial = new THREE.MeshPhongMaterial({
+            color: 0x9c42f5,
+            shininess: 90,
+            emissive: 0x4a1a94,
+            emissiveIntensity: 0.2
+        });
+
+        // Create enhanced ground grid
+        const gridHelper = new THREE.GridHelper(20, 20, 0x404040, 0x404040);
+        scene.add(gridHelper);
+
+        // Create spheres with trails
+        const earthSphere = new THREE.Mesh(sphereGeometry, earthMaterial);
+        earthSphere.position.set(-3, 18, 0);
+        earthSphere.castShadow = true;
+        scene.add(earthSphere);
+
+        const exoplanetSphere = new THREE.Mesh(sphereGeometry, exoplanetMaterial);
+        exoplanetSphere.position.set(3, 18, 0);
+        exoplanetSphere.castShadow = true;
+        scene.add(exoplanetSphere);
+
+        // Camera setup
+        camera.position.set(0, 17, 30);
+        camera.lookAt(0, 10, 0);
 
         // Gravity Constants
         const gravityEarth = -9.8; // m/s^2
         let gravityExoplanet = -4.5; // Default exoplanet gravity
         let isRunning = false; // Simulation is initially not running
-
-        // Spheres (Objects in free fall)
-        const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-        const earthMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-        const exoplanetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-        // Earth Sphere
-        const earthSphere = new THREE.Mesh(sphereGeometry, earthMaterial);
-        earthSphere.position.set(-3, 20, 0); // Increased initial height and positioned for side-by-side view
-        scene.add(earthSphere);
-
-        // Exoplanet Sphere
-        const exoplanetSphere = new THREE.Mesh(sphereGeometry, exoplanetMaterial);
-        exoplanetSphere.position.set(3, 20, 0); // Increased initial height and positioned for side-by-side view
-        scene.add(exoplanetSphere);
-
-        // Ground Planes (One for Each Side)
-        const groundGeometry = new THREE.PlaneGeometry(5, 5);
-        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
-
-        // Earth Ground Plane
-        const earthGround = new THREE.Mesh(groundGeometry, groundMaterial);
-        earthGround.rotation.x = Math.PI / 2;
-        earthGround.position.set(-3, 0, 0);
-        scene.add(earthGround);
-
-        // Exoplanet Ground Plane
-        const exoplanetGround = new THREE.Mesh(groundGeometry, groundMaterial);
-        exoplanetGround.rotation.x = Math.PI / 2;
-        exoplanetGround.position.set(3, 0, 0);
-        scene.add(exoplanetGround);
-
-        // Camera Position
-        camera.position.z = 25;
-        camera.position.y = 5; // Slightly raised to see both spheres and ground planes
 
         // Simulation Variables
         let timeElapsed = 0;
@@ -128,6 +321,12 @@
             isRunning = false; // Stop the simulation
         });
 
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
         // Reset function to reposition spheres and reset time
         function resetSimulation() {
             timeElapsed = 0;
@@ -145,6 +344,10 @@
             const earthFallDistance = 0.5 * gravityEarth * Math.pow(timeElapsed, 2);
             const exoplanetFallDistance = 0.5 * gravityExoplanet * Math.pow(timeElapsed, 2);
 
+            // Add subtle rotation
+            earthSphere.rotation.x += 0.01;
+            exoplanetSphere.rotation.x += 0.01;
+
             // Update y-position of each sphere until they reach the ground
             earthSphere.position.y = Math.max(initialHeight + earthFallDistance, 0);
             exoplanetSphere.position.y = Math.max(initialHeight + exoplanetFallDistance, 0);
@@ -160,6 +363,8 @@
             // Render the scene
             renderer.render(scene, camera);
         }
+        // Initial render
+        renderer.render(scene, camera);
     </script>
 </body>
 

@@ -24,7 +24,6 @@ except Exception as e:
 class PredictionInput(BaseModel):
     pl_mass: float
     pl_radius: float
-    pl_density: float
 
 # Mapping of prediction numbers to labels
 planet_type_labels = {
@@ -43,9 +42,16 @@ async def root():
 @app.post("/predict-planet-type")
 async def predict_planet_type(input_data: PredictionInput):
     try:
+        # Validate input
+        if input_data.pl_mass <= 0:
+            raise HTTPException(status_code=400, detail="Mass must be greater than zero.")
+        if input_data.pl_radius <= 0:
+            raise HTTPException(status_code=400, detail="Radius must be greater than zero.")
+        
         print(input_data)
+        pl_density = input_data.pl_mass / ((4/3) * 3.14 * (input_data.pl_radius ** 3))
         # Prepare data in the correct format
-        data = [[input_data.pl_mass, input_data.pl_radius, input_data.pl_density]]
+        data = [[input_data.pl_mass, input_data.pl_radius, pl_density]]
         
         # Check data input
         print(f"Input data: {data}")
