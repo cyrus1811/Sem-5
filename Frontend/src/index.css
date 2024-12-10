@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --deep-space: #0a0a0f;
+  --space-blue: #1e2130;
+  --nebula-purple: #6d28d9;
+  --star-glow: #e2e8f0;
+  --accent-blue: #3b82f6;
+  --glass-bg: rgba(14, 14, 22, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-deep-space text-white;
+  }
+}
+
+@layer utilities {
+  .bg-deep-space {
+    background-color: var(--deep-space);
+  }
+  
+  .bg-glass-bg {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(12px);
+  }
+
+  .border-glass-border {
+    border-color: var(--glass-border);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.animate-twinkle {
+  animation: twinkle 5s infinite;
+}
