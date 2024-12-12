@@ -33,3 +33,10 @@ export interface Planet {
   surfaceTemperature: SurfaceTemperature;
   surfacePressure: number;
 }
+
+export interface PlanetFilters {
+  habitabilityRange?: [number, number];
+  closestStarProximity?: [number, number];
+  prominentElements?: string[];
+  surfaceTemperatureRange?: [number, number];
+}

@@ -76,7 +76,7 @@ function App() {
       element: <ComparisonPage />
     },
     {
-      path: "/info/:planetName",
+      path: "/planet/:planetName",
       element: <PlanetInfo />
     },
 

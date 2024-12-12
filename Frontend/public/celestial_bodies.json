@@ -2,8 +2,8 @@
   "planets": [
     {
       "name": "Mercury",
-      "gltfModel": "https://example.com/mercury.gltf",
-      "thumbnail": "https://example.com/mercury-thumbnail.jpg",
+      "gltfModel": "/3d-models/mercury/scene.gltf",
+      "thumbnail": "/3d-models/mercury/textures/Material.001_baseColor.jpeg",
       "radius": 2439.7,
       "closestStar": {
         "name": "Sun",
@@ -40,8 +40,8 @@
     },
     {
       "name": "Venus",
-      "gltfModel": "https://example.com/venus.gltf",
-      "thumbnail": "https://example.com/venus-thumbnail.jpg",
+      "gltfModel": "../public/3d-models/venus/scene.gltf",
+      "thumbnail": "../public/3d-models/venus/textures/Material.001_baseColor.jpeg",
       "radius": 6051.8,
       "closestStar": {
         "name": "Sun",
@@ -77,8 +77,8 @@
     },
     {
       "name": "Earth",
-      "gltfModel": "https://example.com/earth.gltf",
-      "thumbnail": "https://example.com/earth-thumbnail.jpg",
+      "gltfModel": "/3d-models/earth/scene.gltf",
+      "thumbnail": "/3d-models/earth/textures/Earth_emissive.png",
       "radius": 6371,
       "closestStar": {
         "name": "Sun",
@@ -114,8 +114,8 @@
     },
     {
       "name": "Mars",
-      "gltfModel": "https://example.com/mars.gltf",
-      "thumbnail": "https://example.com/mars-thumbnail.jpg",
+      "gltfModel": "/3d-models/mars/scene.gltf",
+      "thumbnail": "/3d-models/mars/textures/Material.001_baseColor.jpeg",
       "radius": 3389.5,
       "closestStar": {
         "name": "Sun",
@@ -150,6 +150,191 @@
         "average": -60
       },
       "surfacePressure": 6.36
+    },
+    {
+      "name": "Jupiter",
+      "gltfModel": "/3d-models/jupiter/scene.gltf",
+      "thumbnail": "/3d-models/jupiter/textures/Material_baseColor.jpeg",
+      "radius": 69911,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 778.3
+      },
+      "prominentElements": [
+        {
+          "element": "Hydrogen",
+          "percentage": 89.8
+        },
+        {
+          "element": "Helium",
+          "percentage": 10.2
+        },
+        {
+          "element": "Methane",
+          "percentage": 0.3
+        }
+      ],
+      "habitabilityScore": 0,
+      "smallDescription": "The largest planet in the solar system.",
+      "largeDescription": "Jupiter is a gas giant with a massive magnetic field and dozens of moons. It has a turbulent atmosphere with the famous Great Red Spot.",
+      "orbitalSpeed": 13.07,
+      "timeToOrbit": 4331.6,
+      "volume": 1.43128E+15,
+      "mass": 1.898E+27,
+      "circumference": 439264,
+      "escapeVelocity": 59.5,
+      "surfaceTemperature": {
+        "average": -108
+      },
+      "surfacePressure": "High"
+    },
+    {
+      "name": "Saturn",
+      "gltfModel": "/3d-models/saturn/scene.gltf",
+      "thumbnail": "/3d-models/saturn/textures/Material.002_baseColor.jpeg",
+      "radius": 58232,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 1427
+      },
+      "prominentElements": [
+        {
+          "element": "Hydrogen",
+          "percentage": 96.3
+        },
+        {
+          "element": "Helium",
+          "percentage": 3.2
+        },
+        {
+          "element": "Methane",
+          "percentage": 0.45
+        }
+      ],
+      "habitabilityScore": 0,
+      "smallDescription": "Known for its stunning ring system.",
+      "largeDescription": "Saturn is the second largest planet and is best known for its prominent ring system. It has over 80 moons, including Titan, which has its own atmosphere.",
+      "orbitalSpeed": 9.69,
+      "timeToOrbit": 10759,
+      "volume": 8.2713E+14,
+      "mass": 5.683E+26,
+      "circumference": 365882,
+      "escapeVelocity": 35.5,
+      "surfaceTemperature": {
+        "average": -139
+      },
+      "surfacePressure": "High"
+    },
+    {
+      "name": "Uranus",
+      "gltfModel": "/3d-models/uranus/scene.gltf",
+      "thumbnail": "/3d-models/uranus/textures/Material.002_baseColor.jpeg",
+      "radius": 25362,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 2871
+      },
+      "prominentElements": [
+        {
+          "element": "Hydrogen",
+          "percentage": 83
+        },
+        {
+          "element": "Helium",
+          "percentage": 15
+        },
+        {
+          "element": "Methane",
+          "percentage": 2.3
+        }
+      ],
+      "habitabilityScore": 0,
+      "smallDescription": "An ice giant with a unique tilt.",
+      "largeDescription": "Uranus rotates on its side, making it unique among the planets. Its atmosphere contains water, ammonia, and methane, giving it a pale blue color.",
+      "orbitalSpeed": 6.81,
+      "timeToOrbit": 30687,
+      "volume": 6.833E+13,
+      "mass": 8.681E+25,
+      "circumference": 159354,
+      "escapeVelocity": 21.3,
+      "surfaceTemperature": {
+        "average": -195
+      },
+      "surfacePressure": "Moderate"
+    },
+    {
+      "name": "Neptune",
+      "gltfModel": "/3d-models/neptune/scene.gltf",
+      "thumbnail": "/3d-models/neptune/textures/moon_baseColor.jpeg",
+      "radius": 24622,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 4495
+      },
+      "prominentElements": [
+        {
+          "element": "Hydrogen",
+          "percentage": 80
+        },
+        {
+          "element": "Helium",
+          "percentage": 19
+        },
+        {
+          "element": "Methane",
+          "percentage": 1.5
+        }
+      ],
+      "habitabilityScore": 0,
+      "smallDescription": "The windiest planet in the solar system.",
+      "largeDescription": "Neptune is an ice giant with extreme weather, including the fastest winds in the solar system. Its deep blue color is due to methane in its atmosphere.",
+      "orbitalSpeed": 5.43,
+      "timeToOrbit": 60190,
+      "volume": 6.254E+13,
+      "mass": 1.024E+26,
+      "circumference": 154704,
+      "escapeVelocity": 23.5,
+      "surfaceTemperature": {
+        "average": -201
+      },
+      "surfacePressure": "Moderate"
+    },
+    {
+      "name": "Pluto",
+      "gltfModel": "/3d-models/pluto/scene.gltf",
+      "thumbnail": "/3d-models/pluto/textures/Scene_-_Root_baseColor.jpeg",
+      "radius": 1188.3,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 5906
+      },
+      "prominentElements": [
+        {
+          "element": "Nitrogen",
+          "percentage": 98
+        },
+        {
+          "element": "Methane",
+          "percentage": 1.5
+        },
+        {
+          "element": "Carbon Monoxide",
+          "percentage": 0.5
+        }
+      ],
+      "habitabilityScore": 0,
+      "smallDescription": "A dwarf planet with a heart-shaped glacier.",
+      "largeDescription": "Pluto, once considered the ninth planet, is a cold, icy dwarf planet. Its surface has mountains, valleys, and plains of nitrogen ice.",
+      "orbitalSpeed": 4.74,
+      "timeToOrbit": 90560,
+      "volume": 7.057E+9,
+      "mass": 1.309E+22,
+      "circumference": 7481,
+      "escapeVelocity": 1.3,
+      "surfaceTemperature": {
+        "average": -229
+      },
+      "surfacePressure": 0.015
     }
   ]
 }
