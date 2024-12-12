@@ -4,12 +4,15 @@ import { Planet } from '@/lib/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
+import { ChevronLeft, LucideArrowLeft, Maximize2 } from 'lucide-react';
 
 const PlanetInfo: React.FC = () => {
-  const [planets, setPlanets] = useState < Planet[] > ([]);
+  const [planets, setPlanets] = useState<Planet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState < string | null > (null);
-  const { planetName } = useParams < { planetName: string } > ();
+  const [error, setError] = useState<string | null>(null);
+  const { planetName } = useParams<{ planetName: string }>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPlanets = async () => {
@@ -47,15 +50,15 @@ const PlanetInfo: React.FC = () => {
     <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-[#0d1117] to-[#161b22] text-white p-4">
       <button
         onClick={() => window.history.back()}
-        className="absolute top-4 left-4 px-4 py-2 bg-[#1a2027] text-white rounded hover:bg-[#22272e]"
+        className="absolute top-4 left-4 bg-[#1a2027] text-white rounded flex items-center hover:bg-[#22272e]"
       >
-        Back
+        <ChevronLeft className="mr-2" />
       </button>
       <h1 className="text-4xl font-bold mb-4 text-center">{planet.name}</h1>
       <p className="text-lg mb-8 text-center max-w-3xl">{planet.smallDescription}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
         <div className="flex flex-col items-center justify-center">
-          <div className="w-full h-[400px] bg-gradient-to-b from-[#1a2027] to-[#161b22] rounded-lg shadow-lg">
+          <div className="w-full h-[400px] bg-gradient-to-b from-[#1a2027] to-[#161b22] rounded-lg shadow-lg relative">
             <Canvas camera={{ position: [0, 0, 10], near: 0.1, far: 1000 }}>
               <PerspectiveCamera makeDefault />
               <OrbitControls />
@@ -63,6 +66,27 @@ const PlanetInfo: React.FC = () => {
               <pointLight position={[10, 10, 10]} />
               {/* <Gltf src={planet.gltfModel} /> */}
             </Canvas>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="absolute bottom-4 right-4 px-4 py-2 bg-[#1a2027] text-white rounded hover:bg-[#22272e]"
+                >
+                  <Maximize2 />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="p-4 bg-[#0d1117] rounded-lg shadow-lg w-full max-w-3xl">
+                <div className="w-full h-[600px]">
+                  <Canvas camera={{ position: [0, 0, 10], near: 0.1, far: 1000 }}>
+                    <PerspectiveCamera makeDefault />
+                    <OrbitControls />
+                    <ambientLight intensity={0.5} />
+                    <pointLight position={[10, 10, 10]} />
+                    {/* <Gltf src={planet.gltfModel} /> */}
+                  </Canvas>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -79,7 +103,7 @@ const PlanetInfo: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 w-full max-w-5xl">
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Radius</CardTitle>
           </CardHeader>
@@ -87,7 +111,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.radius} km</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg  items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Mass</CardTitle>
           </CardHeader>
@@ -95,7 +119,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.mass} kg</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Volume</CardTitle>
           </CardHeader>
@@ -103,7 +127,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.volume} km³</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Circumference</CardTitle>
           </CardHeader>
@@ -111,7 +135,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.circumference} km</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Orbital Speed</CardTitle>
           </CardHeader>
@@ -119,7 +143,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.orbitalSpeed} km/s</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Time to Orbit</CardTitle>
           </CardHeader>
@@ -127,7 +151,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.timeToOrbit} Earth days</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Closest Star</CardTitle>
           </CardHeader>
@@ -135,7 +159,7 @@ const PlanetInfo: React.FC = () => {
             <p>{planet.closestStar.name}</p>
           </CardContent>
         </Card>
-        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg items-center justify-center p-4">
           <CardHeader>
             <CardTitle>Distance to Closest Star</CardTitle>
           </CardHeader>
