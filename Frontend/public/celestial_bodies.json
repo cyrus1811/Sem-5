@@ -1,0 +1,155 @@
+{
+  "planets": [
+    {
+      "name": "Mercury",
+      "gltfModel": "https://example.com/mercury.gltf",
+      "thumbnail": "https://example.com/mercury-thumbnail.jpg",
+      "radius": 2439.7,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 57.91
+      },
+      "prominentElements": [
+        {
+          "element": "Oxygen",
+          "percentage": 42
+        },
+        {
+          "element": "Sodium",
+          "percentage": 29
+        },
+        {
+          "element": "Hydrogen",
+          "percentage": 22
+        }
+      ],
+      "habitabilityScore": 0.1,
+      "smallDescription": "The smallest and closest planet to the Sun.",
+      "largeDescription": "Mercury is a rocky planet with extreme temperature fluctuations and no atmosphere to support life as we know it.",
+      "orbitalSpeed": 47.87,
+      "timeToOrbit": 87.97,
+      "volume": 6.083E+10,
+      "mass": 3.285E+23,
+      "circumference": 15329.4,
+      "escapeVelocity": 4.25,
+      "surfaceTemperature": {
+        "min": -173,
+        "max": 427
+      },
+      "surfacePressure": 0
+    },
+    {
+      "name": "Venus",
+      "gltfModel": "https://example.com/venus.gltf",
+      "thumbnail": "https://example.com/venus-thumbnail.jpg",
+      "radius": 6051.8,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 108.2
+      },
+      "prominentElements": [
+        {
+          "element": "Carbon Dioxide",
+          "percentage": 96.5
+        },
+        {
+          "element": "Nitrogen",
+          "percentage": 3.5
+        },
+        {
+          "element": "Sulfur Dioxide",
+          "percentage": 0.015
+        }
+      ],
+      "habitabilityScore": 0.2,
+      "smallDescription": "The hottest planet in our solar system.",
+      "largeDescription": "Venus has a thick, toxic atmosphere that traps heat, making it the hottest planet in the solar system. Its surface pressure is extremely high.",
+      "orbitalSpeed": 35.02,
+      "timeToOrbit": 224.7,
+      "volume": 9.284E+11,
+      "mass": 4.867E+24,
+      "circumference": 38025.7,
+      "escapeVelocity": 10.36,
+      "surfaceTemperature": {
+        "average": 462
+      },
+      "surfacePressure": 9200
+    },
+    {
+      "name": "Earth",
+      "gltfModel": "https://example.com/earth.gltf",
+      "thumbnail": "https://example.com/earth-thumbnail.jpg",
+      "radius": 6371,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 149.6
+      },
+      "prominentElements": [
+        {
+          "element": "Nitrogen",
+          "percentage": 78
+        },
+        {
+          "element": "Oxygen",
+          "percentage": 21
+        },
+        {
+          "element": "Argon",
+          "percentage": 0.93
+        }
+      ],
+      "habitabilityScore": 10,
+      "smallDescription": "The only known planet to support life.",
+      "largeDescription": "Earth is a dynamic planet with a diverse environment, liquid water, and an atmosphere that supports life. It has a magnetic field protecting it from harmful solar radiation.",
+      "orbitalSpeed": 29.78,
+      "timeToOrbit": 365.25,
+      "volume": 1.08321E+12,
+      "mass": 5.972E+24,
+      "circumference": 40075,
+      "escapeVelocity": 11.19,
+      "surfaceTemperature": {
+        "average": 15
+      },
+      "surfacePressure": 101.3
+    },
+    {
+      "name": "Mars",
+      "gltfModel": "https://example.com/mars.gltf",
+      "thumbnail": "https://example.com/mars-thumbnail.jpg",
+      "radius": 3389.5,
+      "closestStar": {
+        "name": "Sun",
+        "proximity": 227.9
+      },
+      "prominentElements": [
+        {
+          "element": "Carbon Dioxide",
+          "percentage": 95.3
+        },
+        {
+          "element": "Nitrogen",
+          "percentage": 2.7
+        },
+        {
+          "element": "Argon",
+          "percentage": 1.6
+        }
+      ],
+      "habitabilityScore": 3.5,
+      "smallDescription": "The Red Planet with potential for past life.",
+      "largeDescription": "Mars has a thin atmosphere and a cold desert-like surface. Evidence of water-ice and seasonal methane suggests the possibility of ancient microbial life.",
+      "orbitalSpeed": 24.07,
+      "timeToOrbit": 687,
+      "volume": 1.6318E+11,
+      "mass": 6.417E+23,
+      "circumference": 21344,
+      "escapeVelocity": 5.03,
+      "surfaceTemperature": {
+        "min": -125,
+        "max": 20,
+        "average": -60
+      },
+      "surfacePressure": 6.36
+    }
+  ]
+}

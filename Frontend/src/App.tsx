@@ -6,6 +6,9 @@ import SolarSystem from './pages/Solar'
 import Simulation from './pages/Simulation'
 import EarthExoplanetComparison from './pages/Compare'
 import { useEffect } from 'react'
+import ComparisonPage from './components/Planet_Comparison'
+import PlanetInfo from './components/Planet_Info'
+import PlanetsList from './components/Planet_list'
 
 function App() {
 
@@ -64,9 +67,19 @@ function App() {
       element: <Simulation />
     },
     {
+      path: "/planets",
+      element: <PlanetsList />
+    },
+    {
       path: "/compare",
-      element: <EarthExoplanetComparison />
-    }
+      //element: <EarthExoplanetComparison />
+      element: <ComparisonPage />
+    },
+    {
+      path: "/info/:planetName",
+      element: <PlanetInfo />
+    },
+
   ])
   return (
     <RouterProvider router={router} />
