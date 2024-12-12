@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Planet } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-//interface PlanetInfoProps {
-//  planets: Planet[];
-//}
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 
 const PlanetInfo: React.FC = () => {
-  const [planets, setPlanets] = useState<Planet[]>([]);
+  const [planets, setPlanets] = useState < Planet[] > ([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { planetName } = useParams<{ planetName: string }>();
+  const [error, setError] = useState < string | null > (null);
+  const { planetName } = useParams < { planetName: string } > ();
 
   useEffect(() => {
     const fetchPlanets = async () => {
@@ -28,87 +26,127 @@ const PlanetInfo: React.FC = () => {
         setIsLoading(false);
       }
     };
-
     fetchPlanets();
   }, []);
 
   const planet = planets.find(p => p.name === planetName);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-black">
-        <div className="text-white">Loading planet details...</div>
-      </div>
-    );
+    return <div>Loading planet details...</div>;
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-black text-red-500">
-        {error}
-      </div>
-    );
+    return <div>Error: {error}</div>;
   }
 
   if (!planet) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-black text-white">
-        Planet not found
-      </div>
-    );
+    return <div>Planet not found</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-blue-900 to-purple-900 text-white p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex items-center space-x-8">
-          <img
-            src={planet.gltfModel}
-            alt={planet.name}
-            className="w-64 h-64 object-cover rounded-full"
-          />
-          <div>
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent">
-              {planet.name}
-            </h1>
-            <p className="text-xl text-gray-300">{planet.largeDescription}</p>
+    <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-[#0d1117] to-[#161b22] text-white p-4">
+      <button
+        onClick={() => window.history.back()}
+        className="absolute top-4 left-4 px-4 py-2 bg-[#1a2027] text-white rounded hover:bg-[#22272e]"
+      >
+        Back
+      </button>
+      <h1 className="text-4xl font-bold mb-4 text-center">{planet.name}</h1>
+      <p className="text-lg mb-8 text-center max-w-3xl">{planet.smallDescription}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-full h-[400px] bg-gradient-to-b from-[#1a2027] to-[#161b22] rounded-lg shadow-lg">
+            <Canvas camera={{ position: [0, 0, 10], near: 0.1, far: 1000 }}>
+              <PerspectiveCamera makeDefault />
+              <OrbitControls />
+              <ambientLight intensity={0.5} />
+              <pointLight position={[10, 10, 10]} />
+              {/* <Gltf src={planet.gltfModel} /> */}
+            </Canvas>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="bg-white/10 backdrop-blur-lg border-white/20">
+        <div className="grid grid-cols-1 gap-4">
+          <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>
-              <CardTitle>Physical Characteristics</CardTitle>
+              <CardTitle>About {planet.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <p>Radius: {planet.radius} km</p>
-                <p>Mass: {planet.mass} kg</p>
-                <p>Volume: {planet.volume} km³</p>
-                <p>Circumference: {planet.circumference} km</p>
-              </div>
+              <p>{planet.largeDescription}</p>
             </CardContent>
           </Card>
-
-          <Card className="bg-white/10 backdrop-blur-lg border-white/20">
-            <CardHeader>
-              <CardTitle>Orbital Characteristics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <p>Orbital Speed: {planet.orbitalSpeed} km/s</p>
-                <p>Time to Orbit: {planet.timeToOrbit} Earth days</p>
-                <p>Closest Star: {planet.closestStar.name}</p>
-                <p>Distance: {planet.closestStar.proximity} million km</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* More detailed cards for temperature, elements, etc. */}
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 w-full max-w-5xl">
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Radius</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.radius} km</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Mass</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.mass} kg</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Volume</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.volume} km³</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Circumference</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.circumference} km</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Orbital Speed</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.orbitalSpeed} km/s</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Time to Orbit</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.timeToOrbit} Earth days</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Closest Star</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.closestStar.name}</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#1a2027]/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Distance to Closest Star</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{planet.closestStar.proximity} million km</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 };
 
 export default PlanetInfo;
+
