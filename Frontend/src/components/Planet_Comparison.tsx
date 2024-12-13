@@ -229,6 +229,13 @@ const PlanetComparison: React.FC = () => {
         <Card className="bg-black/40 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
           <CardHeader className="flex flex-row justify-between items-center border-b border-white/10 pb-4 bg-black/20 backdrop-blur-xl">
             <CardTitle className="text-4xl text-white tracking-wide font-bold">
+              <Button
+                variant="ghost"
+                className="m-2 rounded-full bg-black/20 backdrop-blur-xl"
+                onClick={() => window.location.href = '/'}
+              >
+                &lt;
+              </Button>
               Celestial Body Comparison
             </CardTitle>
             <div className="flex items-center space-x-4">
