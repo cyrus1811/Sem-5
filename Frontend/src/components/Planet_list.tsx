@@ -91,7 +91,7 @@ const PlanetsList: React.FC = () => {
 
   const comparePlanets = () => {
     let joinedList = comparisonList.join(",")
-    navigate(`/planet/compare?planets=${joinedList}`)
+    navigate(`/compare?planets=${joinedList}`)
   };
   const ElementCombobox = () => {
     const allElements = Array.from(new Set(
@@ -329,7 +329,7 @@ const PlanetsList: React.FC = () => {
         >Compare</Button>
 
         {comparisonList.map((planet) => (
-          <div className="flex justify-between gap-2">
+          <div className="flex justify-between gap-2" key={planet}>
             <p className="text-white/80 text-sm">{planet}</p>
             <Button
               variant="outline"

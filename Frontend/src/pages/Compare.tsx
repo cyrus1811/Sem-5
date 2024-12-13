@@ -4,12 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -201,8 +201,8 @@ const EarthExoplanetComparison = () => {
       <Card className="absolute top-4 left-4 z-10 w-72 bg-white/10 backdrop-blur-md border border-white/20">
         <CardContent className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label 
-              htmlFor="planetSelect" 
+            <Label
+              htmlFor="planetSelect"
               className="text-white hover:text-gray-200"
             >
               Select Planet
@@ -212,50 +212,50 @@ const EarthExoplanetComparison = () => {
                 <SelectValue placeholder="Select a planet" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 text-white border-white/20">
-                <SelectItem 
-                  value="1.0" 
+                <SelectItem
+                  value="1.0"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Earth
                 </SelectItem>
-                <SelectItem 
-                  value="0.5" 
+                <SelectItem
+                  value="0.5"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Mercury
                 </SelectItem>
-                <SelectItem 
-                  value="0.6" 
+                <SelectItem
+                  value="0.6"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Venus
                 </SelectItem>
-                <SelectItem 
-                  value="0.53" 
+                <SelectItem
+                  value="0.53"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Mars
                 </SelectItem>
-                <SelectItem 
-                  value="1.4" 
+                <SelectItem
+                  value="1.4"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Jupiter
                 </SelectItem>
-                <SelectItem 
-                  value="1.2" 
+                <SelectItem
+                  value="1.2"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Saturn
                 </SelectItem>
-                <SelectItem 
-                  value="0.5" 
+                <SelectItem
+                  value="0.5"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Uranus
                 </SelectItem>
-                <SelectItem 
-                  value="0.5" 
+                <SelectItem
+                  value="0.5"
                   className="text-white hover:bg-white/10 focus:bg-white/20"
                 >
                   Neptune
@@ -265,8 +265,8 @@ const EarthExoplanetComparison = () => {
           </div>
 
           <div className="space-y-2">
-            <Label 
-              htmlFor="sizeSlider" 
+            <Label
+              htmlFor="sizeSlider"
               className="text-white hover:text-gray-200"
             >
               Exoplanet Size
