@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -6,16 +6,16 @@ import { Slider } from '@/components/ui/slider';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
-import { ChevronsUpDown, X } from 'lucide-react';
+import { ChevronsUpDown, Trash2, X } from 'lucide-react';
 import { Planet, PlanetFilters } from '@/lib/types';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-const PlanetExplorer: React.FC = () => {
+const PlanetsList: React.FC = () => {
   const [planets, setPlanets] = useState<Planet[]>([]);
-  const [filteredPlanets, setFilteredPlanets] = useState<Planet[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filters, setFilters] = useState<PlanetFilters>({});
+  const [comparisonList, setComparisonList] = useState<string[]>([]);
   const navigate = useNavigate();
 
   // Fetch planets on component mount
@@ -25,7 +25,6 @@ const PlanetExplorer: React.FC = () => {
         const response = await fetch('/celestial_bodies.json');
         const data = await response.json();
         setPlanets(data.planets);
-        setFilteredPlanets(data.planets);
       } catch (error) {
         console.error('Failed to fetch planets:', error);
       }
@@ -34,8 +33,66 @@ const PlanetExplorer: React.FC = () => {
     fetchPlanets();
   }, []);
 
-  // Filtering logic remains the same as in the previous implementation
+  // Comprehensive filtering function
+  const filteredPlanets = useMemo(() => {
+    return planets.filter(planet => {
+      // Search term filter
+      if (searchTerm && !planet.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
 
+      // Habitability range filter
+      if (filters.habitabilityRange) {
+        const [min, max] = filters.habitabilityRange;
+        if (planet.habitabilityScore < min || planet.habitabilityScore > max) {
+          return false;
+        }
+      }
+
+      // Prominent elements filter
+      if (filters.prominentElements && filters.prominentElements.length > 0) {
+        const planetElements = planet.prominentElements.map(el => el.element);
+        if (!filters.prominentElements.some(element => planetElements.includes(element))) {
+          return false;
+        }
+      }
+
+      // Surface temperature range filter
+      if (filters.surfaceTemperatureRange) {
+        const [minTemp, maxTemp] = filters.surfaceTemperatureRange;
+        const avgTemp = planet.surfaceTemperature.average;
+
+        if (avgTemp === undefined || avgTemp < minTemp || avgTemp > maxTemp) {
+          return false;
+        }
+      }
+
+      // Closest star proximity filter
+      if (filters.closestStarProximity) {
+        const [minProximity, maxProximity] = filters.closestStarProximity;
+        const starProximity = planet.closestStar.proximity;
+
+        if (starProximity < minProximity || starProximity > maxProximity) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [planets, searchTerm, filters]);
+
+  // Rest of the component remains the same as in the previous implementation...
+  // (ElementCombobox, ActiveFilters, addToComparisonList, comparePlanets, PlanetCard methods)
+
+  const addToComparisonList = (planetName: string) => {
+    if (comparisonList.includes(planetName)) return;
+    setComparisonList((prevlist) => [...prevlist, planetName]);
+  };
+
+  const comparePlanets = () => {
+    let joinedList = comparisonList.join(",")
+    navigate(`/planet/compare?planets=${joinedList}`)
+  };
   const ElementCombobox = () => {
     const allElements = Array.from(new Set(
       planets.flatMap(planet =>
@@ -119,6 +176,22 @@ const PlanetExplorer: React.FC = () => {
       });
     }
 
+    if (filters.surfaceTemperatureRange) {
+      activeFilters.push({
+        label: `Surface Temp: ${filters.surfaceTemperatureRange[0]}°C - ${filters.surfaceTemperatureRange[1]}°C`,
+        value: 'temperature',
+        onRemove: () => setFilters(prev => ({ ...prev, surfaceTemperatureRange: undefined }))
+      });
+    }
+
+    if (filters.closestStarProximity) {
+      activeFilters.push({
+        label: `Star Proximity: ${filters.closestStarProximity[0]} - ${filters.closestStarProximity[1]} light-years`,
+        value: 'proximity',
+        onRemove: () => setFilters(prev => ({ ...prev, closestStarProximity: undefined }))
+      });
+    }
+
     return (
       <div className="flex flex-wrap gap-2 mb-4">
         {activeFilters.map(filter => (
@@ -138,8 +211,12 @@ const PlanetExplorer: React.FC = () => {
     );
   };
 
+
   const PlanetCard: React.FC<{ planet: Planet }> = ({ planet }) => (
-    <Card className="bg-gray-900/60 backdrop-blur-lg rounded-2xl border border-gray-700 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+    <Card className="relative h-max z-10 bg-gray-900/60 backdrop-blur-lg rounded-2xl border border-gray-700 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+
+      onClick={() => navigate(`/planet/${planet.name}`)}
+    >
       <CardHeader>
         <CardTitle className="text-2xl text-white/90 truncate">{planet.name}</CardTitle>
       </CardHeader>
@@ -155,28 +232,27 @@ const PlanetExplorer: React.FC = () => {
           <span>Closest Star: {planet.closestStar.name}</span>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-center">
         <Button
           variant="outline"
-          className="text-white border-gray-700 bg-gray-800/50 hover:bg-gray-700/50"
-          onClick={() => navigate(`/planet/${planet.name}/compare`)}
+          className="rounded-xl text-white border-gray-700 bg-gray-800/50 hover:bg-gray-700/50"
+          onClick={(e) => {
+            e.stopPropagation()
+            console.log(comparisonList)
+            addToComparisonList(planet.name);
+          }}
         >
-          Compare
-        </Button>
-        <Button
-          variant="secondary"
-          className="text-white bg-blue-800/50 border-blue-700 hover:bg-blue-700/50"
-          onClick={() => navigate(`/planet/${planet.name}`)}
-        >
-          Details
+          Add to Compare
         </Button>
       </CardFooter>
     </Card>
   );
 
+  // Render remains mostly the same, but update the grid to use filteredPlanets
   return (
     <div className="flex min-h-screen bg-black p-4 space-x-6">
-      {/* Sidebar */}
+      {/* Sidebar with filters remains the same */}
+
       <div className="w-1/4 bg-gray-900/60 backdrop-blur-lg rounded-2xl p-6 space-y-6 max-h-[calc(100vh-2rem)] overflow-y-auto border border-gray-700 shadow-xl">
         <h2 className="text-3xl text-white font-bold mb-6 tracking-wide">Planet Explorer</h2>
 
@@ -245,6 +321,28 @@ const PlanetExplorer: React.FC = () => {
             />
           </div>
         </div>
+
+        <Button
+          variant="outline"
+          className="w-full justify-between bg-gray-800/50 text-white rounded-xl border-gray-700 hover:bg-gray-700/50"
+          onClick={comparePlanets}
+        >Compare</Button>
+
+        {comparisonList.map((planet) => (
+          <div className="flex justify-between gap-2">
+            <p className="text-white/80 text-sm">{planet}</p>
+            <Button
+              variant="outline"
+              className=""
+              onClick={(e) => {
+                e.stopPropagation()
+                console.log(comparisonList)
+                return setComparisonList((prevlist) => prevlist.filter((planetFilter) => planetFilter !== planet));
+              }}>
+              <Trash2 className="" />
+            </Button>
+          </div>
+        ))}
       </div>
 
       {/* Planet Grid */}
@@ -262,4 +360,4 @@ const PlanetExplorer: React.FC = () => {
   );
 };
 
-export default PlanetExplorer;
+export default PlanetsList;
