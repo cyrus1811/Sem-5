@@ -1,13 +1,16 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 import joblib
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from simulation.model import EcosystemModel
+from fastapi.responses import JSONResponse, Response
 
 app = FastAPI()
 
+# CORS Middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5174", "http://127.0.0.1:5174"],  # Explicitly list the allowed frontend origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,3 +77,48 @@ async def predict_planet_type(input_data: PredictionInput):
         raise HTTPException(status_code=400, detail=f"Value error: {e}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
+
+class EnvironmentInput(BaseModel):
+    co2: float
+    temperature: float
+    sunlight_intensity: float
+    water_availability: float
+
+model = None
+
+@app.post("/simulate")
+def simulate_environment(environment: EnvironmentInput):
+    global model
+
+    model = EcosystemModel(
+        width=10,
+        height=10,
+        co2=environment.co2,
+        temperature=environment.temperature,
+        sunlight_intensity=environment.sunlight_intensity,
+        water_availability=environment.water_availability
+    )
+
+    # Run one step of the simulation
+    model.step()
+
+    # Get the current state
+    state = model.get_state()
+
+    return JSONResponse(
+        content={
+            "environment": environment.model_dump(),
+            "ecosystem_state": state
+        }
+    )
+
+@app.get("/state")
+def get_current_state():
+    if model is None:
+        return {"error": "No simulation has been run yet."}
+    
+    # Get the current state of the model
+    state = model.get_state()
+    return {
+        "ecosystem_state": state
+    }
