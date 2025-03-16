@@ -4,11 +4,11 @@ import Footer from './components/Home/Footer'
 import Home from './pages/Home'
 import SolarSystem from './pages/Solar'
 import Simulation from './pages/Simulation'
-import EarthExoplanetComparison from './pages/Compare'
 import { useEffect } from 'react'
 import PlanetInfo from './components/Planet_Info'
 import PlanetsList from './components/Planet_list'
 import PlanetComparison from './components/Planet_Comparison'
+import PlanetAnalysis from './components/Planet_Analysis'
 
 function App() {
 
@@ -72,14 +72,16 @@ function App() {
     },
     {
       path: "/compare",
-      //element: <EarthExoplanetComparison />
       element: <PlanetComparison />
     },
     {
       path: "/planet/:planetName",
       element: <PlanetInfo />
     },
-
+    {
+      path:  "/analysis",
+      element: <PlanetAnalysis />
+    }
   ])
   return (
     <RouterProvider router={router} />
