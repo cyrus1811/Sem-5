@@ -13,14 +13,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Papa from 'papaparse';
+import axios from 'axios';
+
+interface PlanetType {
+  prediction: string
+  pl_mass: number
+  pl_radius: number
+}
+
+interface RadiationLevel {
+  prediction: string
+}
+
+interface GasComposition {
+  H2O: number
+  CO2: number
+  O2: number
+  N2: number
+  CH4: number
+  N2O: number
+  CO: number
+  O3: number
+  SO2: number
+  NH3: number
+  C2H6: number
+  NO2: number
+}
 
 interface PlanetData {
-  planetType: string;
-  radiationLevel: 'low' | 'medium' | 'high';
-  gasComposition: {
-    gas: string;
-    percentage: number;
-  }[];
+  planetType: PlanetType
+  radiationLevel: RadiationLevel
+  gasComposition: GasComposition
 }
 
 interface PlanetCatalog {
@@ -168,23 +191,24 @@ const PlanetAnalysis = () => {
   });
 
   const radiationColors = {
-    low: 'bg-green-500',
-    medium: 'bg-yellow-500',
-    high: 'bg-red-500',
+    Low: 'bg-green-500',
+    Medium: 'bg-yellow-500',
+    High: 'bg-red-500',
   };
 
   // Planet type descriptions
   const planetDescriptions = {
-    'Earth-like': 'A rocky planet with conditions similar to Earth, potentially suitable for human habitation.',
-    'Gas Giant': 'A massive planet composed mainly of hydrogen and helium, similar to Jupiter or Saturn.',
-    'Super Earth': 'A rocky planet with greater mass than Earth but substantially smaller than ice giants.',
-    'Ocean World': 'A planet where the surface is completely or predominantly covered by a global ocean.',
-    'Desert Planet': 'An arid planet with minimal water content and large desert areas.',
-    'Ice Planet': 'A frozen world with surface temperatures consistently below waters freezing point.'
-  };
+    "Jovian": "A gas giant primarily composed of hydrogen and helium, similar to Jupiter or Saturn.",
+    "Miniterran": "A small terrestrial planet with a solid surface, significantly smaller than Earth.",
+    "Neptunian": "A gas or ice giant with a composition and size similar to Neptune or Uranus.",
+    "Subterran": "A rocky planet smaller than Earth, with lower gravity and thinner atmosphere.",
+    "Superterran": "A massive rocky planet larger than Earth but smaller than gas giants.",
+    "Terran": "A terrestrial planet with Earth-like conditions, potentially habitable."
+};
+
 
   useEffect(() => {
-    fetch("/data/PHL_HWC.csv") 
+    fetch("/data/PHL_HWC.csv")
       .then((response) => response.text())
       .then((csvText) => {
         Papa.parse(csvText, {
@@ -255,25 +279,50 @@ const PlanetAnalysis = () => {
     setError(null);
 
     try {
-      // Simulate API call to your FastAPI backend
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+      const planet_response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/predict-planet-type`, {
+        pl_mass: parseFloat(formData.pl_mass),
+        pl_radius: parseFloat(formData.pl_radius),
+      });
 
-      // Mock response - replace with your actual API response
-      const mockData: PlanetData = {
-        planetType: ['Earth-like', 'Gas Giant', 'Super Earth', 'Ocean World', 'Desert Planet', 'Ice Planet'][Math.floor(Math.random() * 6)],
-        radiationLevel: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as 'low' | 'medium' | 'high',
-        gasComposition: [
-          { gas: 'Oxygen', percentage: Math.random() * 30 },
-          { gas: 'Nitrogen', percentage: Math.random() * 50 + 40 },
-          { gas: 'Carbon Dioxide', percentage: Math.random() * 10 },
-          { gas: 'Methane', percentage: Math.random() * 5 },
-          { gas: 'Argon', percentage: Math.random() * 5 },
+      const radiation_response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/predict-radiation`, {
+        stellar_temp: parseFloat(formData.stellar_temp),
+        stellar_metal: parseFloat(formData.stellar_metal),
+        stellar_log_lum: parseFloat(formData.stellar_log_lum),
+        stellar_age: parseFloat(formData.stellar_age),
+        stellar_dist: parseFloat(formData.stellar_dist),
+        pl_radius: parseFloat(formData.pl_radius),
+        pl_mass: parseFloat(formData.pl_mass),
+      });
+
+      const gas_response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/predict-gas`, {
+        spectrum: Array.from({ length: 100 }, () => Math.random() * 0.01),
+        planetary_features: [
+          formData.pl_mass,
+          formData.pl_radius,
+          formData.pl_density,
+          formData.pl_orb_period,
+          formData.stellar_temp,
+          formData.pl_ecc,
+          formData.stellar_age
         ],
+      });
+
+      // Replace the part where you set the planetData after API calls:
+      console.log("Planet response:", planet_response.data);
+      console.log("Radiation response:", radiation_response.data);
+      console.log("Gas response:", gas_response.data);
+      console.log("Gas composition structure:", JSON.stringify(gas_response.data.predicted_gases));
+
+      const response_data = {
+        planetType: planet_response.data,
+        radiationLevel: radiation_response.data,
+        gasComposition: gas_response.data.predicted_gases,
       };
 
-      setPlanetData(mockData);
+      console.log("Final data structure:", JSON.stringify(response_data));
+      setPlanetData(response_data);
     } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+      setError(err.message || "An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -347,7 +396,7 @@ const PlanetAnalysis = () => {
                     <Globe className="h-5 w-5 text-blue-400" />
                     <h3 className="text-lg font-medium text-blue-400">Planet Parameters</h3>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="pl_mass" className="text-white">Mass (Earth = 1)</Label>
@@ -424,7 +473,7 @@ const PlanetAnalysis = () => {
                     <Sun className="h-5 w-5 text-yellow-400" />
                     <h3 className="text-lg font-medium text-yellow-400">Star Parameters</h3>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="stellar_temp" className="text-white">Temperature (K)</Label>
@@ -533,15 +582,20 @@ const PlanetAnalysis = () => {
                     <div>
                       <CardTitle className="text-white">Planet Classification</CardTitle>
                       <CardDescription className="text-gray-400">
-                        {selectedPlanet ? `Analysis of ${selectedPlanet}` : 'Identified planet type based on submitted parameters'}
+                        {selectedPlanet
+                          ? `Analysis of ${selectedPlanet}`
+                          : 'Identified planet type based on submitted parameters'}
                       </CardDescription>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="bg-white/5 p-4 rounded-xl">
-                      <h3 className="text-2xl font-bold text-blue-400 mb-2">{planetData.planetType}</h3>
+                      <h3 className="text-2xl font-bold text-blue-400 mb-2">
+                        {planetData.planetType?.prediction || 'Unknown Planet Type'}
+                      </h3>
                       <p className="text-gray-300">
-                        {planetDescriptions[planetData.planetType as keyof typeof planetDescriptions] || 'A planet with unique characteristics.'}
+                        {planetDescriptions[planetData.planetType?.prediction as keyof typeof planetDescriptions] ||
+                          'A planet with unique characteristics.'}
                       </p>
                     </div>
                   </CardContent>
@@ -549,7 +603,7 @@ const PlanetAnalysis = () => {
 
                 {/* Radiation Level Card */}
                 <Card className="bg-[rgba(14,14,21,0.8)] border-gray-800 backdrop-blur-xl shadow-xl overflow-hidden">
-                  <div className={`h-2 ${radiationColors[planetData.radiationLevel]}`}></div>
+                  <div className={`h-2 ${radiationColors[planetData.radiationLevel?.prediction as keyof typeof radiationColors]}`}></div>
                   <CardHeader className="flex flex-row items-center gap-4">
                     <ThermometerSun className="h-8 w-8 text-yellow-400" />
                     <div>
@@ -561,14 +615,22 @@ const PlanetAnalysis = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center gap-4">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${radiationColors[planetData.radiationLevel]}`}>
-                        <span className="text-white font-bold uppercase">{planetData.radiationLevel}</span>
+                      <div
+                        className={`w-16 h-16 rounded-full flex items-center justify-center ${radiationColors[planetData.radiationLevel?.prediction as keyof typeof radiationColors]
+                          }`}
+                      >
+                        <span className="text-white font-bold uppercase">
+                          {planetData.radiationLevel?.prediction || 'Unknown'}
+                        </span>
                       </div>
                       <div>
                         <p className="text-gray-300">
-                          {planetData.radiationLevel === 'low' && 'Safe for long-term habitation with minimal protection.'}
-                          {planetData.radiationLevel === 'medium' && 'Moderate risk. Radiation shielding recommended for extended exposure.'}
-                          {planetData.radiationLevel === 'high' && 'Dangerous levels. Specialized radiation shielding required for any surface activity.'}
+                          {planetData.radiationLevel?.prediction === 'Low' &&
+                            'Safe for long-term habitation with minimal protection.'}
+                          {planetData.radiationLevel?.prediction === 'Medium' &&
+                            'Moderate risk. Radiation shielding recommended for extended exposure.'}
+                          {planetData.radiationLevel?.prediction === 'High' &&
+                            'Dangerous levels. Specialized radiation shielding required for any surface activity.'}
                         </p>
                       </div>
                     </div>
@@ -589,20 +651,27 @@ const PlanetAnalysis = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {planetData.gasComposition.map((gas, index) => (
-                        <div key={index} className="space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-300">{gas.gas}</span>
-                            <span className="text-gray-400">{gas.percentage.toFixed(2)}%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2.5">
-                            <div
-                              className="bg-gradient-to-r from-blue-400 to-indigo-600 h-2.5 rounded-full"
-                              style={{ width: `${gas.percentage}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
+                      {planetData.gasComposition &&
+                        Object.entries(planetData.gasComposition).map(([gas, value], index) => {
+                          // Ensure the gas percentage is a number
+                          const percentage = typeof value === 'number' ? value : value?.prediction || 0;
+                          const displayPercentage = (percentage * 100).toFixed(2);
+
+                          return (
+                            <div key={index} className="space-y-1">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-300">{gas}</span>
+                                <span className="text-gray-400">{displayPercentage}%</span>
+                              </div>
+                              <div className="w-full bg-gray-700 rounded-full h-2.5">
+                                <div
+                                  className="bg-gradient-to-r from-blue-400 to-indigo-600 h-2.5 rounded-full"
+                                  style={{ width: `${percentage * 100}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          );
+                        })}
                     </div>
                   </CardContent>
                 </Card>
@@ -612,9 +681,12 @@ const PlanetAnalysis = () => {
                 <CardContent className="text-center p-12">
                   <div className="bg-white/5 p-8 rounded-xl">
                     <Globe className="h-16 w-16 text-blue-400 mx-auto mb-6 opacity-50" />
-                    <h3 className="text-xl font-semibold text-gray-300 mb-4">No Planet Data Yet</h3>
+                    <h3 className="text-xl font-semibold text-gray-300 mb-4">
+                      No Planet Data Yet
+                    </h3>
                     <p className="text-gray-400">
-                      Select a known planet from the dropdown, generate random parameters, or submit custom values to receive a detailed analysis.
+                      Select a known planet from the dropdown, generate random parameters,
+                      or submit custom values to receive a detailed analysis.
                     </p>
                   </div>
                 </CardContent>
