@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 import PlanetInfo from './components/Planet_Info'
 import PlanetsList from './components/Planet_list'
 import PlanetComparison from './components/Planet_Comparison'
-import PlanetAnalysis from './components/Planet_Analysis'
+import PlanetAnalysis from './components/Analysis/Planet_Analysis'
 
 function App() {
 

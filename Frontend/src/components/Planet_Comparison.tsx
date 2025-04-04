@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { ChevronsUpDown, X, Star, Orbit, Info } from 'lucide-react';
-import { Planet, ProminentElement } from '@/lib/types';
+import { Planet } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const PlanetComparison: React.FC = () => {

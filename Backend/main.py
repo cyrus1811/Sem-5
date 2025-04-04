@@ -1,10 +1,16 @@
 from fastapi import FastAPI, HTTPException
-import joblib
+import joblib, os, requests
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from tensorflow import keras
 import numpy as np
+import pandas as pd
+from schemas.schemas import PlanetPredictionInput, RadiationPredictionInput, GasPredictionInput, PlanetData, PlanetDataRequestModel, PlanetHabitabilityRequestModel
+from dotenv import load_dotenv
+import google.generativeai as genai
 
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 app = FastAPI()
 
 # CORS Middleware configuration
@@ -35,25 +41,13 @@ try:
     gas_scaler = joblib.load("./models/Gas_Emission/scaler.pkl")
     print("Gas Prediction models loaded successfully.") 
 
+    simple_imputer = joblib.load("./models/Habitability/imputer.joblib")
+    multioutput_rf = joblib.load("./models/Habitability/multioutput_rf.joblib")
+    habitability_scaler = joblib.load("./models/Habitability/feature_scaler.joblib")
+    print("Habitability models loaded successfully.")
+
 except Exception as e:
     print(f"Error loading model: {e}")
-
-class PlanetPredictionInput(BaseModel):
-    pl_mass: float
-    pl_radius: float
-
-class RadiationPredictionInput(BaseModel):
-    stellar_temp: float
-    stellar_metal: float
-    stellar_log_lum: float
-    stellar_age: float
-    stellar_dist: float
-    pl_mass: float  # Added from predict-planet-type
-    pl_radius: float  # Added from predict-planet-type
-
-class GasPredictionInput(BaseModel):
-    spectrum: list[float] 
-    planetary_features: list[float]
 
 planet_type_labels = {
     0: "Jovian",
@@ -136,6 +130,86 @@ def predict_gas(input_data: GasPredictionInput):
 
     return {"predicted_gases": result}
 
+@app.post("/gen-ai")
+def get_gemini_response(request: PlanetDataRequestModel):
+    planet_data = request.planetData
+    
+    if not GEMINI_API_KEY:
+        raise HTTPException(status_code=500, detail="Gemini API key is missing")
+    
+    # Construct the prompt
+    prompt = f"""
+    You are an expert in planetary science analyzing an exoplanet based on its characteristics.  
+
+    ### **Planetary Data**  
+    - **Mass**: {planet_data.planetType.pl_mass} Earth masses  
+    - **Radius**: {planet_data.planetType.pl_radius} Earth radii  
+    - **Radiation Level**: {planet_data.radiationLevel.prediction}  
+    - **Atmospheric Composition**:  
+    {', '.join([f"{gas}: {concentration:.2%}" for gas, concentration in planet_data.gasComposition.dict().items()])}  
+
+    ### **Task:**  
+    1. **Key Observations:**  
+    - Analyze the significance of the atmospheric composition.  
+    - Identify the dominant gases and their potential effects on temperature, pressure, and climate.  
+    - Highlight any toxic or greenhouse gases that could make the planet uninhabitable.  
+
+    2. **Planet Type:**  
+    - Based on mass, radius, and atmosphere, categorize this planet (e.g., terrestrial, gas giant, ocean world, or Venus-like).  
+    - Compare it to known planets, if applicable.  
+
+    3. **Suitability for Life:**  
+    - Assess whether this planet could support Earth-like life.  
+    - Consider temperature effects, potential toxicity, and other habitability factors.  
+
+    ### **Response Format:**  
+    #### **Key Observations:**  
+    - [Detailed analysis of atmospheric composition and its effects]  
+
+    #### **Planet Type:**  
+    - [Classification with reasoning]  
+
+    #### **Suitability for Life:**  
+    - [Yes/No with detailed explanation on why the conditions are suitable or hostile for life]  
+
+    Make the response **detailed, analytical, and scientifically accurate** while being clear and easy to understand.
+    """
+    
+    try:
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+
+        print(response)
+
+        return {"planet_analysis": response.text if response else "No response from Gemini."}
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Error communicating with Gemini: {str(e)}")
+    
+@app.post("/predict-habitability")
+def predict_habitability(input_data: PlanetHabitabilityRequestModel):
+    try:
+        # Define output targets
+        target_columns = ["P_HABZONE_OPT", "P_HABZONE_CON", "P_HABITABLE", "P_ESI"]
+
+        input_df = pd.DataFrame([input_data.dict()])
+
+        input_imputed = pd.DataFrame(
+            simple_imputer.transform(input_df), columns=input_df.columns
+        )
+
+        input_scaled = pd.DataFrame(
+            habitability_scaler.transform(input_imputed), columns=input_df.columns
+        )
+
+        prediction = multioutput_rf.predict(input_scaled)
+
+        result = {name: float(value) for name, value in zip(target_columns, prediction[0])}
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # class EnvironmentInput(BaseModel):
 #     co2: float
