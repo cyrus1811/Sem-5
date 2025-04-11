@@ -9,6 +9,7 @@ import PlanetInfo from './components/Planet_Info'
 import PlanetsList from './components/Planet_list'
 import PlanetComparison from './components/Planet_Comparison'
 import PlanetAnalysis from './components/Analysis/Planet_Analysis'
+import Sandbox from './components/Sandbox/Sandbox'
 
 function App() {
 
@@ -79,8 +80,12 @@ function App() {
       element: <PlanetInfo />
     },
     {
-      path:  "/analysis",
+      path: "/analysis",
       element: <PlanetAnalysis />
+    },
+    {
+      path: "/sandbox",
+      element: <Sandbox />
     }
   ])
   return (

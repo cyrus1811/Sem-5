@@ -12,6 +12,7 @@ const Gemini_Response = ({ planetData }: { planetData: PlanetData }) => {
             try {
                 const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/gen-ai`, { planetData });
                 setGenResponse(response.data.planet_analysis);
+                console.log("Response from server:", response.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }

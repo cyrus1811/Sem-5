@@ -171,3 +171,64 @@ export interface HabitabilityCheckProps {
     };
     selectedPlanet: string;
 }
+
+export type Asteroid = {
+    id: number;
+    position: [number, number, number];
+    velocity: [number, number, number];
+};
+
+export type PlanetPositionData = {
+    x: number;
+    z: number;
+    size: number;
+};
+
+export type MoonData = {
+    color: string;
+    size: number;
+    distance: number;
+    speed: number;
+};
+
+export type StarData = {
+    color: string;
+    size: number;
+    distance: number;
+    speed: number;
+};
+
+export type SandboxPlanetData = {
+    id: number;
+    color: string;
+    size: number;
+    distance: number;
+    speed: number;
+    moons: MoonData[];
+    stars: StarData[];
+    hasRings: boolean;
+    ringSize: number;
+    ringColor: string;
+    ringInnerRadius: number;
+    ringOuterRadius: number;
+};
+
+export type FormData = {
+    planetColor: string;
+    planetSize: number;
+    planetDistance: number;
+    planetSpeed: number;
+    moonColor: string;
+    moonSize: number;
+    moonDistance: number;
+    moonSpeed: number;
+    starColor: string;
+    starSize: number;
+    starDistance: number;
+    starSpeed: number;
+    hasRings: boolean;
+    ringColor: string;
+    ringSize: number;
+    ringInnerRadius: number;
+    ringOuterRadius: number;
+};
