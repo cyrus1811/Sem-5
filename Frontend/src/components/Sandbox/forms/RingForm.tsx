@@ -1,17 +1,6 @@
 import React from 'react';
-
-type RingFormProps = {
-    hasRings: boolean;
-    setHasRings: (hasRings: boolean) => void;
-    ringColor: string;
-    setRingColor: (color: string) => void;
-    ringSize: number;
-    setRingSize: (size: number) => void;
-    ringInnerRadius: number;
-    setRingInnerRadius: (radius: number) => void;
-    ringOuterRadius: number;
-    setRingOuterRadius: (radius: number) => void;
-};
+import { motion } from 'framer-motion';
+import { RingFormProps } from '@/types/types';
 
 const RingForm: React.FC<RingFormProps> = ({
     hasRings,
@@ -26,68 +15,72 @@ const RingForm: React.FC<RingFormProps> = ({
     setRingOuterRadius
 }) => {
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-                marginBottom: "10px"
-            }}
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-4"
         >
-            <h3>Ring Properties</h3>
-            <label>Has Rings? </label>
-            <input
-                type="checkbox"
-                checked={hasRings}
-                onChange={() => setHasRings(!hasRings)}
-                style={{ marginBottom: "10px" }}
-            />
+            <div className="flex items-center">
+                <input
+                    type="checkbox"
+                    checked={hasRings}
+                    onChange={(e) => setHasRings(e.target.checked)}
+                    className="w-5 h-5 mr-2 accent-purple-500"
+                />
+                <label className="text-sm font-medium">Enable Rings</label>
+            </div>
 
             {hasRings && (
                 <>
-                    <label>Ring Color: </label>
-                    <input
-                        type="color"
-                        value={ringColor}
-                        onChange={(e) => setRingColor(e.target.value)}
-                        style={{ marginBottom: "10px" }}
-                    />
-
-                    <label>Ring Size: </label>
-                    <input
-                        type="number"
-                        min="0.1"
-                        max="1"
-                        step="0.1"
-                        value={ringSize}
-                        onChange={(e) => setRingSize(Number(e.target.value))}
-                        style={{ marginBottom: "10px" }}
-                    />
-
-                    <label>Ring Inner Radius: </label>
-                    <input
-                        type="number"
-                        min="1"
-                        step="0.5"
-                        value={ringInnerRadius}
-                        onChange={(e) => setRingInnerRadius(Number(e.target.value))}
-                        style={{ marginBottom: "10px" }}
-                    />
-
-                    <label>Ring Outer Radius: </label>
-                    <input
-                        type="number"
-                        min="1.5"
-                        step="0.5"
-                        value={ringOuterRadius}
-                        onChange={(e) => setRingOuterRadius(Number(e.target.value))}
-                        style={{ marginBottom: "10px" }}
-                    />
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Ring Color</label>
+                        <input
+                            type="color"
+                            value={ringColor}
+                            onChange={(e) => setRingColor(e.target.value)}
+                            className="w-full h-10 rounded-lg cursor-pointer"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Ring Size: {ringSize.toFixed(2)}</label>
+                        <input
+                            type="range"
+                            min="0.01"
+                            max="0.2"
+                            step="0.01"
+                            value={ringSize}
+                            onChange={(e) => setRingSize(parseFloat(e.target.value))}
+                            className="w-full accent-purple-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Inner Radius: {ringInnerRadius.toFixed(1)}</label>
+                        <input
+                            type="range"
+                            min="1.5"
+                            max={ringOuterRadius - 0.5}
+                            step="0.1"
+                            value={ringInnerRadius}
+                            onChange={(e) => setRingInnerRadius(parseFloat(e.target.value))}
+                            className="w-full accent-purple-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Outer Radius: {ringOuterRadius.toFixed(1)}</label>
+                        <input
+                            type="range"
+                            min={ringInnerRadius + 0.5}
+                            max="5"
+                            step="0.1"
+                            value={ringOuterRadius}
+                            onChange={(e) => setRingOuterRadius(parseFloat(e.target.value))}
+                            className="w-full accent-purple-500"
+                        />
+                    </div>
                 </>
             )}
-        </div>
+        </motion.div>
     );
 };
 

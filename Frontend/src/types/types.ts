@@ -213,6 +213,16 @@ export type SandboxPlanetData = {
     ringOuterRadius: number;
 };
 
+export type CanvasProps ={
+    asteroids: Asteroid[],
+    planets: SandboxPlanetData[],
+    planetPositions:PlanetPositionData[],
+    handleAsteroidImpact: (id: number) => void,
+    updatePlanetPosition: (index: number, x: number, z: number) => void,
+    handlePlanetClick: (id: number) => void,
+    selectedPlanetId: number | null,
+}
+
 export type FormData = {
     planetColor: string;
     planetSize: number;
@@ -232,3 +242,81 @@ export type FormData = {
     ringInnerRadius: number;
     ringOuterRadius: number;
 };
+
+export type PlanetFormProps = {
+    planetColor: string;
+    setPlanetColor: (color: string) => void;
+    planetSize: number;
+    setPlanetSize: (size: number) => void;
+    planetDistance: number;
+    setPlanetDistance: (distance: number) => void;
+    planetSpeed: number;
+    setPlanetSpeed: (speed: number) => void;
+};
+
+export type RingFormProps = {
+    hasRings: boolean;
+    setHasRings: (hasRings: boolean) => void;
+    ringColor: string;
+    setRingColor: (color: string) => void;
+    ringSize: number;
+    setRingSize: (size: number) => void;
+    ringInnerRadius: number;
+    setRingInnerRadius: (radius: number) => void;
+    ringOuterRadius: number;
+    setRingOuterRadius: (radius: number) => void;
+};
+
+export type StarFormProps = {
+    starColor: string;
+    setStarColor: (color: string) => void;
+    starSize: number;
+    setStarSize: (size: number) => void;
+    starDistance: number;
+    setStarDistance: (distance: number) => void;
+    starSpeed: number;
+    setStarSpeed: (speed: number) => void;
+};
+
+export type MoonFormProps = {
+    moonColor: string;
+    setMoonColor: (color: string) => void;
+    moonSize: number;
+    setMoonSize: (size: number) => void;
+    moonDistance: number;
+    setMoonDistance: (distance: number) => void;
+    moonSpeed: number;
+    setMoonSpeed: (speed: number) => void;
+};
+
+export type ActionButtonsProps = {
+    isEditing: boolean;
+    resetForm: () => void;
+    setPlanets: React.Dispatch<React.SetStateAction<SandboxPlanetData[]>>;
+    setPlanetPositions: React.Dispatch<React.SetStateAction<PlanetPositionData[]>>;
+    selectedPlanetId: number | null;
+    planets: SandboxPlanetData[];
+    planetColor: string;
+    planetSize: number;
+    planetDistance: number;
+    planetSpeed: number;
+    moonColor: string;
+    moonSize: number;
+    moonDistance: number;
+    moonSpeed: number;
+    starColor: string;
+    starSize: number;
+    starDistance: number;
+    starSpeed: number;
+    hasRings: boolean;
+    ringSize: number;
+    ringColor: string;
+    ringInnerRadius: number;
+    ringOuterRadius: number;
+    setAsteroids: React.Dispatch<React.SetStateAction<Asteroid[]>>;
+}
+
+export type TabsProps= {
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
+}
