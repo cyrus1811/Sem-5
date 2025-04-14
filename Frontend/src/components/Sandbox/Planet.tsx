@@ -1,10 +1,8 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useSpring, animated } from "@react-spring/three";
-import { Html, Text } from "@react-three/drei";
-import { gsap } from "gsap";
-import { SandboxPlanetData } from "@/types/types";
+import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { SandboxPlanetData } from "@/types/types";
 
 interface PlanetProps {
     planetData: SandboxPlanetData;
@@ -14,256 +12,213 @@ interface PlanetProps {
     isSelected: boolean;
 }
 
-const Planet: React.FC<PlanetProps> = ({
+const Planet = ({
     planetData,
     index,
     updatePlanetPosition,
     onPlanetClick,
-    isSelected,
-}) => {
-    const {
-        id,
-        color,
-        size,
-        distance,
-        speed,
-        moons,
-        stars,
-        hasRings,
-        ringColor,
-        ringInnerRadius,
-        ringOuterRadius,
-    } = planetData;
-
+    isSelected
+}: PlanetProps) => {
     const planetRef = useRef<THREE.Mesh>(null);
-    const planetOrbitRef = useRef<THREE.Group>(null);
+    const cloudsRef = useRef<THREE.Mesh>(null);
+    const atmosphereRef = useRef<THREE.Mesh>(null);
+    const orbitRef = useRef<THREE.Line>(null);
+    const moonRef = useRef<THREE.Mesh>(null);
     const ringsRef = useRef<THREE.Mesh>(null);
-    const moonOrbitRef = useRef<THREE.Group>(null);
-    const starOrbitRef = useRef<THREE.Group>(null);
-    const textRef = useRef<THREE.Group>(null);
-    const orbitTrailRef = useRef<THREE.Line>(null);
-    
-    const [hovered, setHovered] = useState(false);
-    const [orbitAngle, setOrbitAngle] = useState(Math.random() * Math.PI * 2);
 
-    // Animation springs
-    const { planetScale } = useSpring({
-        planetScale: hovered || isSelected ? [1.2, 1.2, 1.2] : [1, 1, 1],
-        config: { tension: 300, friction: 10 }
-    });
+    const texturePaths: Record<string, string> = {};
+    if (planetData.texture) texturePaths.map = planetData.texture;
+    if (planetData.bumpMap) texturePaths.bumpMap = planetData.bumpMap;
+    if (planetData.specularMap) texturePaths.specularMap = planetData.specularMap;
+    if (planetData.cloudTexture) texturePaths.cloudsMap = planetData.cloudTexture;
+    if (planetData.moons?.[0]?.texture) texturePaths.moonMap = planetData.moons[0].texture;
+    if (planetData.moons?.[0]?.bumpMap) texturePaths.moonBumpMap = planetData.moons[0].bumpMap;
 
-    const { emissiveIntensity } = useSpring({
-        emissiveIntensity: hovered || isSelected ? 0.5 : 0.2,
-        config: { duration: 300 }
-    });
+    const textures = useTexture(texturePaths) as Record<string, THREE.Texture>;
 
-    // Create orbit trail
-    useEffect(() => {
-        if (orbitTrailRef.current) {
-            // GSAP animation for orbit trail
-            gsap.to(orbitTrailRef.current.material, {
-                opacity: isSelected ? 0.8 : 0.3,
-                duration: 0.5
+    const planetMaterial = useMemo(() => {
+        if (planetData.texture) {
+            return new THREE.MeshStandardMaterial({
+                map: textures.map,
+                bumpMap: textures.bumpMap,
+                bumpScale: 0.05,
+                metalness: 0.1,
+                roughness: 0.8,
+            });
+        } else {
+            return new THREE.MeshStandardMaterial({
+                color: planetData.color,
+                metalness: 0.1,
+                roughness: 0.8
             });
         }
-    }, [isSelected]);
+    }, [planetData.texture, planetData.color, textures]);
 
-    // Show planet name on hover
-    useEffect(() => {
-        if (textRef.current) {
-            gsap.to(textRef.current.position, {
-                y: hovered ? size + 0.5 : size + 0.3,
-                duration: 0.3
-            });
-            
-            gsap.to(textRef.current.scale, {
-                x: hovered ? 1.2 : 1,
-                y: hovered ? 1.2 : 1,
-                z: hovered ? 1.2 : 1,
-                duration: 0.3
-            });
-        }
-    }, [hovered, size]);
 
-    // Rotation animation for selected planet
-    useEffect(() => {
-        if (planetRef.current && isSelected) {
-            gsap.to(planetRef.current.rotation, {
-                y: planetRef.current.rotation.y + Math.PI * 2,
-                duration: 2,
-                ease: "power1.inOut"
+    const moonMaterial = useMemo(() => {
+        if (planetData.moons?.[0]?.texture) {
+            return new THREE.MeshStandardMaterial({
+                map: textures.moonMap,
+                bumpMap: textures.moonBumpMap,
+                bumpScale: 0.03,
+                metalness: 0.1,
+                roughness: 0.8,
+            });
+        } else {
+            return new THREE.MeshStandardMaterial({
+                color: planetData.moons?.[0]?.color || "#aaaaaa",
+                metalness: 0.1,
+                roughness: 0.8
             });
         }
-    }, [isSelected]);
+    }, [planetData.moons, textures]);
 
-    // Main animation loop for orbital motion
-    useFrame((_, delta) => {
-        if (planetOrbitRef.current) {
-            // Update orbit angle
-            setOrbitAngle((prev) => prev + speed * delta);
-            
-            // Calculate new position
-            const x = Math.cos(orbitAngle) * distance;
-            const z = Math.sin(orbitAngle) * distance;
-            
-            // Update planet position
-            planetOrbitRef.current.position.x = x;
-            planetOrbitRef.current.position.z = z;
-            
-            // Update position data for collision detection
-            updatePlanetPosition(index, x, z);
+    const cloudMaterial = useMemo(() => {
+        if (textures.cloudsMap) {
+            return new THREE.MeshStandardMaterial({
+                map: textures.cloudsMap,
+                transparent: true,
+                opacity: 0.6,
+                side: THREE.DoubleSide,
+            });
         }
+        return null;
+    }, [textures.cloudsMap]);
 
-        // Rotate planet on its axis
+    const atmosphereMaterial = useMemo(() => {
+        if (planetData.hasAtmosphere) {
+            return new THREE.MeshStandardMaterial({
+                color: new THREE.Color(planetData.color).lerp(new THREE.Color("#ffffff"), 0.5),
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.BackSide,
+            });
+        }
+        return null;
+    }, [planetData.hasAtmosphere, planetData.color]);
+
+    const ringMaterial = useMemo(() => {
+        if (planetData.hasRings) {
+            return new THREE.MeshStandardMaterial({
+                color: planetData.ringColor || "#a8a8a8",
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide,
+            });
+        }
+        return null;
+    }, [planetData.hasRings, planetData.ringColor]);
+
+    useFrame(({ clock }) => {
+        const time = clock.getElapsedTime();
+        const orbitSpeed = planetData.speed * 0.1;
+        const orbitRadius = planetData.distance;
+        const planetX = Math.sin(time * orbitSpeed) * orbitRadius;
+        const planetZ = Math.cos(time * orbitSpeed) * orbitRadius;
+
         if (planetRef.current) {
-            planetRef.current.rotation.y += delta * 0.5;
-        }
+            planetRef.current.position.set(planetX, 0, planetZ);
+            planetRef.current.rotation.y += 0.005;
 
-        // Rotate moons around planet
-        if (moonOrbitRef.current && moons.length > 0) {
-            moonOrbitRef.current.rotation.y += delta * moons[0].speed * 5;
-        }
+            updatePlanetPosition(index, planetX, planetZ);
 
-        // Rotate stars around planet
-        if (starOrbitRef.current && stars.length > 0) {
-            starOrbitRef.current.rotation.y -= delta * stars[0].speed * 3;
-        }
+            if (cloudsRef.current) {
+                cloudsRef.current.position.copy(planetRef.current.position);
+                cloudsRef.current.rotation.y += 0.007;
+            }
 
-        // Rotate rings
-        if (ringsRef.current && hasRings) {
-            ringsRef.current.rotation.z += delta * 0.1;
+            if (atmosphereRef.current) {
+                atmosphereRef.current.position.copy(planetRef.current.position);
+            }
+
+            if (moonRef.current && planetData.moons?.[0]) {
+                const moonSpeed = planetData.moons[0].speed * 0.5;
+                const moonDistance = planetData.moons[0].distance;
+
+                const moonX = Math.sin(time * moonSpeed) * moonDistance;
+                const moonZ = Math.cos(time * moonSpeed) * moonDistance;
+
+                moonRef.current.position.set(planetX + moonX, 0, planetZ + moonZ);
+                moonRef.current.rotation.y += 0.01;
+            }
+
+            if (ringsRef.current && planetData.hasRings) {
+                ringsRef.current.position.copy(planetRef.current.position);
+                ringsRef.current.rotation.x = Math.PI / 6;
+            }
         }
     });
 
-    // Create orbital path
-    const createOrbitPath = () => {
-        const points = [];
-        const segments = 64;
-        
+    const orbitLine = useMemo(() => {
+        const orbitGeometry = new THREE.BufferGeometry();
+        const vertices = [];
+        const radius = planetData.distance;
+        const segments = 128;
+
         for (let i = 0; i <= segments; i++) {
-            const angle = (i / segments) * Math.PI * 2;
-            const x = Math.cos(angle) * distance;
-            const z = Math.sin(angle) * distance;
-            points.push(new THREE.Vector3(x, 0, z));
+            const theta = (i / segments) * Math.PI * 2;
+            vertices.push(Math.sin(theta) * radius, 0, Math.cos(theta) * radius);
         }
-        
-        return new THREE.BufferGeometry().setFromPoints(points);
-    };
+
+        orbitGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        return orbitGeometry;
+    }, [planetData.distance]);
 
     return (
         <>
-            {/* Orbit path */}
-            <line ref={orbitTrailRef} geometry={createOrbitPath()}>
-                <lineBasicMaterial attach="material" color={color} transparent opacity={0.3} />
-            </line>
+            <primitive
+                ref={orbitRef}
+                object={new THREE.Line(orbitLine, new THREE.LineBasicMaterial({
+                    color: "#ffffff",
+                    transparent: true,
+                    opacity: 0.2
+                }))}
+            />
             
-            {/* Planet group that orbits around central star */}
-            <group ref={planetOrbitRef}>
-                {/* Planet */}
-                <animated.mesh
-                    ref={planetRef}
-                    scale={planetScale.to((x, y, z) => [x, y, z])}
-                    onClick={() => onPlanetClick(id)}
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
-                >
-                    <sphereGeometry args={[size, 32, 32]} />
-                    <animated.meshStandardMaterial 
-                        color={color} 
-                        emissive={color} 
-                        emissiveIntensity={emissiveIntensity} 
-                        metalness={0.4}
-                        roughness={0.7}
+            <mesh
+                ref={planetRef}
+                onClick={() => onPlanetClick(planetData.id)}
+                scale={isSelected ? [1.1, 1.1, 1.1] : [1, 1, 1]}
+                material={planetMaterial}
+            >
+                <sphereGeometry args={[planetData.size, 32, 32]} />
+                {isSelected && (
+                    <mesh>
+                        <sphereGeometry args={[planetData.size * 1.05, 32, 32]} />
+                        <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.2} />
+                    </mesh>
+                )}
+            </mesh>
+
+            {planetData.cloudTexture && cloudMaterial && (
+                <mesh ref={cloudsRef} scale={[1.02, 1.02, 1.02]} material={cloudMaterial}>
+                    <sphereGeometry args={[planetData.size, 32, 32]} />
+                </mesh>
+            )}
+
+            {planetData.hasAtmosphere && atmosphereMaterial && (
+                <mesh ref={atmosphereRef} scale={[1.2, 1.2, 1.2]} material={atmosphereMaterial}>
+                    <sphereGeometry args={[planetData.size, 32, 32]} />
+                </mesh>
+            )}
+
+            {planetData.hasRings && ringMaterial && (
+                <mesh ref={ringsRef} material={ringMaterial}>
+                    <ringGeometry
+                        args={[
+                            planetData.ringInnerRadius || planetData.size * 1.5,
+                            planetData.ringOuterRadius || planetData.size * 2.5,
+                            64
+                        ]}
                     />
-                    
-                    {/* Selection wireframe */}
-                    {isSelected && (
-                        <mesh>
-                            <sphereGeometry args={[size * 1.05, 16, 16]} />
-                            <meshBasicMaterial color="white" wireframe transparent opacity={0.3} />
-                        </mesh>
-                    )}
-                </animated.mesh>
-                
-                {/* Planet name */}
-                <group ref={textRef} position={[0, size + 0.3, 0]}>
-                    <Text
-                        color="white"
-                        fontSize={0.2}
-                        anchorX="center"
-                        anchorY="middle"
-                    >
-                        {`Planet #${id}`}
-                    </Text>
-                </group>
-                
-                {/* Planet details on hover */}
-                {hovered && (
-                    <Html
-                        position={[0, -size - 0.5, 0]}
-                        center
-                        distanceFactor={10}
-                        occlude={false}
-                    >
-                        <div className="bg-black/80 backdrop-blur-sm text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-                            {`Size: ${size.toFixed(1)} | Speed: ${speed.toFixed(3)}`}
-                        </div>
-                    </Html>
-                )}
-                
-                {/* Rings */}
-                {hasRings && (
-                    <group>
-                        <mesh ref={ringsRef} rotation={[Math.PI / 2, 0, 0]}>
-                            <ringGeometry args={[ringInnerRadius * size, ringOuterRadius * size, 64]} />
-                            <meshStandardMaterial 
-                                color={ringColor} 
-                                side={THREE.DoubleSide} 
-                                transparent 
-                                opacity={0.8}
-                            />
-                        </mesh>
-                    </group>
-                )}
-                
-                {/* Moons */}
-                {moons.length > 0 && (
-                    <group ref={moonOrbitRef}>
-                        <mesh position={[moons[0].distance * size, 0, 0]}>
-                            <sphereGeometry args={[moons[0].size * size, 16, 16]} />
-                            <meshStandardMaterial 
-                                color={moons[0].color} 
-                                roughness={0.8} 
-                                metalness={0.2}
-                            />
-                        </mesh>
-                    </group>
-                )}
-                
-                {/* Stars */}
-                {stars.length > 0 && (
-                    <group ref={starOrbitRef}>
-                        <mesh position={[0, 0, stars[0].distance * size]}>
-                            <sphereGeometry args={[stars[0].size * size, 16, 16]} />
-                            <meshStandardMaterial 
-                                color={stars[0].color} 
-                                emissive={stars[0].color} 
-                                emissiveIntensity={1} 
-                            />
-                            
-                            {/* Glow effect for stars */}
-                            <mesh>
-                                <sphereGeometry args={[stars[0].size * size * 1.2, 16, 16]} />
-                                <meshBasicMaterial 
-                                    color={stars[0].color} 
-                                    transparent 
-                                    opacity={0.3} 
-                                />
-                            </mesh>
-                        </mesh>
-                    </group>
-                )}
-            </group>
+                </mesh>
+            )}
+
+            {planetData.moons?.[0] && (
+                <mesh ref={moonRef} material={moonMaterial}>
+                    <sphereGeometry args={[planetData.moons[0].size, 16, 16]} />
+                </mesh>
+            )}
         </>
     );
 };

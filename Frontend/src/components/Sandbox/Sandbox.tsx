@@ -2,10 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { Asteroid as AsteroidType, SandboxPlanetData, PlanetPositionData } from "@/types/types";
-import CanvasComponent from "./CanvasComponent";
 
 import { BiPlanet } from "react-icons/bi";
-import {  GiAsteroid } from "react-icons/gi";
+import { GiAsteroid } from "react-icons/gi";
 import { VscDebugRestart } from "react-icons/vsc";
 import Instructions from "./Instructions";
 import ActionButtons from "./ActionButtons";
@@ -14,6 +13,7 @@ import MoonForm from "./forms/MoonForm";
 import StarForm from "./forms/StarForm";
 import RingForm from "./forms/RingForm";
 import Tabs from "./Tabs";
+import CanvasComponent from "./CanvasComponent";
 
 const Sandbox = () => {
     const [planets, setPlanets] = useState<SandboxPlanetData[]>([]);
@@ -54,6 +54,15 @@ const Sandbox = () => {
     const [asteroidCount, setAsteroidCount] = useState(0);
     const [planetCount, setPlanetCount] = useState(0);
     const formRef = useRef(null);
+
+    //Textures
+    const [planetTexture, setPlanetTexture] = useState('');
+    const [moonTexture, setMoonTexture] = useState('');
+    const [planetBumpMap, setPlanetBumpMap] = useState('');
+    const [moonBumpMap, setMoonBumpMap] = useState('');
+    const [planetSpecularMap, setPlanetSpecularMap] = useState('');
+    const [planetCloudTexture, setPlanetCloudTexture] = useState('');
+    const [planetAtmosphere, setPlanetAtmosphere] = useState(false);
 
     useEffect(() => {
         // Intro animation
@@ -113,6 +122,12 @@ const Sandbox = () => {
             setRingSize(planet.ringSize);
             setRingInnerRadius(planet.ringInnerRadius);
             setRingOuterRadius(planet.ringOuterRadius);
+
+            setPlanetTexture(planet.texture || '');
+            setPlanetBumpMap(planet.bumpMap || '');
+            setPlanetSpecularMap(planet.specularMap || '');
+            setPlanetCloudTexture(planet.cloudTexture || '');
+            setPlanetAtmosphere(planet.hasAtmosphere || false);
 
             setSelectedPlanetId(id);
             setIsEditing(true);
@@ -175,6 +190,13 @@ const Sandbox = () => {
         setRingSize(0.1);
         setRingInnerRadius(2.5);
         setRingOuterRadius(3.5);
+        setPlanetTexture('');
+        setMoonTexture('');
+        setPlanetBumpMap('');
+        setMoonBumpMap('');
+        setPlanetSpecularMap('');
+        setPlanetCloudTexture('');
+        setPlanetAtmosphere(false);
     };
 
     const clearAll = () => {
@@ -315,7 +337,7 @@ const Sandbox = () => {
                         </div>
 
                         {/* Action buttons */}
-                        <ActionButtons resetForm={resetForm} isEditing={isEditing} setPlanets={setPlanets} setPlanetPositions={setPlanetPositions} selectedPlanetId={selectedPlanetId} planets={planets} planetColor={planetColor} planetSize={planetSize} planetDistance={planetDistance} planetSpeed={planetSpeed} moonColor={moonColor} moonSize={moonSize} moonDistance={moonDistance} moonSpeed={moonSpeed} starColor={starColor} starSize={starSize} starDistance={starDistance} starSpeed={starSpeed} hasRings={hasRings} ringSize={ringSize} ringColor={ringColor} ringInnerRadius={ringInnerRadius} ringOuterRadius={ringOuterRadius} setAsteroids={setAsteroids} />
+                        <ActionButtons resetForm={resetForm} isEditing={isEditing} setPlanets={setPlanets} setPlanetPositions={setPlanetPositions} selectedPlanetId={selectedPlanetId} planets={planets} planetColor={planetColor} planetSize={planetSize} planetDistance={planetDistance} planetSpeed={planetSpeed} moonColor={moonColor} moonSize={moonSize} moonDistance={moonDistance} moonSpeed={moonSpeed} starColor={starColor} starSize={starSize} starDistance={starDistance} starSpeed={starSpeed} hasRings={hasRings} ringSize={ringSize} ringColor={ringColor} ringInnerRadius={ringInnerRadius} ringOuterRadius={ringOuterRadius} setAsteroids={setAsteroids} planetTexture={planetTexture} setPlanetTexture={setPlanetTexture} moonTexture={moonTexture} setMoonTexture={setMoonTexture} planetBumpMap={planetBumpMap} setPlanetBumpMap={setPlanetBumpMap}moonBumpMap={moonBumpMap} setMoonBumpMap={setMoonBumpMap} planetSpecularMap={planetSpecularMap}setPlanetSpecularMap={setPlanetSpecularMap} planetCloudTexture={planetCloudTexture} setPlanetCloudTexture={setPlanetCloudTexture} planetAtmosphere={planetAtmosphere} setPlanetAtmosphere={setPlanetAtmosphere} />
 
                         {/* Instructions */}
                         <Instructions />

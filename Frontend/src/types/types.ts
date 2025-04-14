@@ -189,6 +189,8 @@ export type MoonData = {
     size: number;
     distance: number;
     speed: number;
+    texture?: string;
+    bumpMap?: string;
 };
 
 export type StarData = {
@@ -211,12 +213,18 @@ export type SandboxPlanetData = {
     ringColor: string;
     ringInnerRadius: number;
     ringOuterRadius: number;
+    // New texture properties
+    texture?: string;
+    bumpMap?: string;
+    specularMap?: string;
+    cloudTexture?: string;
+    hasAtmosphere?: boolean;
 };
 
-export type CanvasProps ={
+export type CanvasProps = {
     asteroids: Asteroid[],
     planets: SandboxPlanetData[],
-    planetPositions:PlanetPositionData[],
+    planetPositions: PlanetPositionData[],
     handleAsteroidImpact: (id: number) => void,
     updatePlanetPosition: (index: number, x: number, z: number) => void,
     handlePlanetClick: (id: number) => void,
@@ -314,9 +322,23 @@ export type ActionButtonsProps = {
     ringInnerRadius: number;
     ringOuterRadius: number;
     setAsteroids: React.Dispatch<React.SetStateAction<Asteroid[]>>;
+    planetTexture?: string;
+    setPlanetTexture: React.Dispatch<React.SetStateAction<string>>;
+    moonTexture?: string;
+    setMoonTexture: React.Dispatch<React.SetStateAction<string>>;
+    planetBumpMap?: string;
+    setPlanetBumpMap: React.Dispatch<React.SetStateAction<string>>;
+    moonBumpMap?: string;
+    setMoonBumpMap: React.Dispatch<React.SetStateAction<string>>;
+    planetSpecularMap?: string;
+    setPlanetSpecularMap: React.Dispatch<React.SetStateAction<string>>;
+    planetCloudTexture?: string;
+    setPlanetCloudTexture: React.Dispatch<React.SetStateAction<string>>;
+    planetAtmosphere?: boolean;
+    setPlanetAtmosphere: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export type TabsProps= {
+export type TabsProps = {
     activeTab: string;
     setActiveTab: (tab: string) => void;
 }
