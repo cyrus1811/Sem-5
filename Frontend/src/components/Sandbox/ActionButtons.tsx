@@ -481,7 +481,7 @@ const ActionButtons = ({
                             checked={!!planetCloudTexture}
                             onChange={(e) => {
                                 if (e.target.checked) {
-                                    setPlanetCloudTexture("/textures/earth_clouds.jpg");
+                                    setPlanetCloudTexture("/3d-models/earth/textures/Earth_clouds.jpg");
                                 } else {
                                     setPlanetCloudTexture("");
                                 }
