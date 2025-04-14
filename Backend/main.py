@@ -162,17 +162,30 @@ def get_gemini_response(request: PlanetDataRequestModel):
     - Assess whether this planet could support Earth-like life.  
     - Consider temperature effects, potential toxicity, and other habitability factors.  
 
-    ### **Response Format:**  
-    #### **Key Observations:**  
-    - [Detailed analysis of atmospheric composition and its effects]  
+    ### **Response Format:**
+    Your response should be in the following JSON structure:
+        {{
+            "Key Observations": {{
+                "Atmospheric Composition Analysis": "",
+                "Dominant Gases and Their Effects": {{
+                "Gas Name 1": "",
+                "Gas Name 2": "",
+                "Gas Name 3": ""
+                // Add more gases as needed
+                }},
+                "Toxic and Greenhouse Gases": ""
+            }},
+            "Planet Type": {{
+                "Classification": "",
+                "Comparison to Known Planets": ""
+            }},
+            "Suitability for Life": {{
+                "Explanation": "",
+                "Suitability": "Yes/No"
+            }}
+        }}
 
-    #### **Planet Type:**  
-    - [Classification with reasoning]  
-
-    #### **Suitability for Life:**  
-    - [Yes/No with detailed explanation on why the conditions are suitable or hostile for life]  
-
-    Make the response **detailed, analytical, and scientifically accurate** while being clear and easy to understand.
+    Make the response **detailed, analytical, and scientifically accurate** while being clear and easy to understand in a json forms.
     """
     
     try:

@@ -581,7 +581,6 @@ const PlanetAnalysis = () => {
                   formData={formData}
                   selectedPlanet={selectedPlanet}
                 />
-
               </form>
 
               {error && (
@@ -590,18 +589,6 @@ const PlanetAnalysis = () => {
                   <AlertTitle>Error</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
-              )}
-
-              {planetData && (
-                <div className="mt-6 pt-6 border-t border-gray-800">
-                  <div className="flex items-center space-x-2 mb-4">
-                    <Sparkles className="h-5 w-5 text-purple-400" />
-                    <h3 className="text-lg font-medium text-purple-400">AI Analysis</h3>
-                  </div>
-                  <div className="bg-white/5 p-4 rounded-xl">
-                    <Gemini_Response planetData={planetData} />
-                  </div>
-                </div>
               )}
             </CardContent>
           </Card>
@@ -730,7 +717,17 @@ const PlanetAnalysis = () => {
             )}
           </div>
         </div>
+        {planetData && (
+          <div className="mt-6 pt-6 border-t border-gray-800">
+            <div className="flex items-center space-x-2 mb-4">
+              <Sparkles className="h-5 w-5 text-purple-400" />
+              <h3 className="text-lg font-medium text-purple-400">AI Analysis</h3>
+            </div>
+            <Gemini_Response planetData={planetData} />
+          </div>
+        )}
       </div>
+
     </div>
   );
 };
