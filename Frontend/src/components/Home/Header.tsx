@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { CircleDot, Menu, X } from 'lucide-react';
 
-const Header = () => {
+const Header = memo(() => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -33,21 +33,6 @@ const Header = () => {
                            group"
               >
                 Planets
-                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 
-                                 h-0.5 bg-blue-500 
-                                 group-hover:w-full 
-                                 w-0 transition-all duration-300"/>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/solar"
-                className="text-white text-sm lg:text-base font-medium px-3 lg:px-4 py-2 rounded-lg relative 
-                           hover:bg-gray-800/50 
-                           transition-all duration-300 
-                           group"
-              >
-                Solar System
                 <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 
                                  h-0.5 bg-blue-500 
                                  group-hover:w-full 
@@ -121,6 +106,7 @@ const Header = () => {
         <button
           className="md:hidden text-white"
           onClick={toggleMobileMenu}
+          aria-label="Open main menu"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -164,6 +150,6 @@ const Header = () => {
       </div>
     </header>
   );
-};
+});
 
 export default Header;
