@@ -14,12 +14,7 @@ const Discover = () => {
       try {
         setLoading(true);
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/news`);
-        
-        if (!response.data.ok) {
-          throw new Error('Failed to fetch news');
-        }
-        
-        const data: NewsApiResponse = await response.data.json();
+        const data: NewsApiResponse = await response.data;
         
         // Check if we have articles in the response
         if (!data.articles || !Array.isArray(data.articles) || data.articles.length === 0) {
