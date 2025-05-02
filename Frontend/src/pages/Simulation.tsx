@@ -1,17 +1,18 @@
-// @ts-nocheck
 import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import "../CSS/Simulation.css";
 
 const Simulation = () => {
-  const mountRef = useRef(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const [gravityExoplanet, setGravityExoplanet] = useState(-4.5);
   const [isRunning, setIsRunning] = useState(false);
   const [customGravity, setCustomGravity] = useState("");
   const timeStep = 0.016;
   const initialHeight = 20;
   let timeElapsed = 0;
-  let earthSphere, exoplanetSphere, animationFrameId;
+  let earthSphere: THREE.Mesh | undefined,
+    exoplanetSphere: THREE.Mesh | undefined,
+    animationFrameId: number | undefined;
 
   useEffect(() => {
     // Scene, Camera, Renderer
@@ -85,12 +86,28 @@ const Simulation = () => {
 
       if (isRunning) {
         const earthFallDistance = 0.5 * -9.8 * Math.pow(timeElapsed, 2);
-        const exoplanetFallDistance = 0.5 * gravityExoplanet * Math.pow(timeElapsed, 2);
+        const exoplanetFallDistance =
+          0.5 * gravityExoplanet * Math.pow(timeElapsed, 2);
 
-        earthSphere.position.y = Math.max(initialHeight + earthFallDistance, 0);
-        exoplanetSphere.position.y = Math.max(initialHeight + exoplanetFallDistance, 0);
+        if (earthSphere) {
+          earthSphere.position.y = Math.max(
+            initialHeight + earthFallDistance,
+            0
+          );
+        }
+        if (exoplanetSphere) {
+          exoplanetSphere.position.y = Math.max(
+            initialHeight + exoplanetFallDistance,
+            0
+          );
+        }
 
-        if (earthSphere.position.y <= 0 && exoplanetSphere.position.y <= 0) {
+        if (
+          earthSphere &&
+          exoplanetSphere &&
+          earthSphere.position.y <= 0 &&
+          exoplanetSphere.position.y <= 0
+        ) {
           timeElapsed = 0;
           earthSphere.position.y = initialHeight;
           exoplanetSphere.position.y = initialHeight;
@@ -100,8 +117,10 @@ const Simulation = () => {
       }
 
       // Always rotate spheres for visual interest, even when not running
-      earthSphere.rotation.x += 0.01;
-      exoplanetSphere.rotation.x += 0.01;
+      if (earthSphere && exoplanetSphere) {
+        earthSphere.rotation.x += 0.01;
+        exoplanetSphere.rotation.x += 0.01;
+      }
 
       renderer.render(scene, camera);
     };
@@ -111,7 +130,9 @@ const Simulation = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId !== undefined) {
+        cancelAnimationFrame(animationFrameId);
+      }
       mountRef.current?.removeChild(renderer.domElement);
     };
   }, [gravityExoplanet, isRunning]);
@@ -119,8 +140,12 @@ const Simulation = () => {
   return (
     <div>
       <div className="fixed top-0 left-0 right-0 z-10 p-4 px-8 bg-[rgba(20,20,50,0.8)] backdrop-blur-lg border border-[rgba(255,255,255,0.2)] shadow-[0_8px_32px_rgba(0,0,0,0.37)] rounded-2xl m-2">
-        <h1 className="text-[1.75rem] font-bold mb-2 bg-gradient-to-r from-[#00f3ff] to-[#8000ff] text-transparent bg-clip-text">Gravity Simulator Pro</h1>
-        <p className="text-[0.9rem] text-[#a0aec0] mb-6">Compare gravitational effects across celestial bodies</p>
+        <h1 className="text-[1.75rem] font-bold mb-2 bg-gradient-to-r from-[#00f3ff] to-[#8000ff] text-transparent bg-clip-text">
+          Gravity Simulator Pro
+        </h1>
+        <p className="text-[0.9rem] text-[#a0aec0] mb-6">
+          Compare gravitational effects across celestial bodies
+        </p>
         <div className="flex flex-col flex-wrap gap-4 items-stretch md:flex-row md:items-center sm:flex-col sm:items-stretch">
           <div className="flex flex-col gap-2">
             <label htmlFor="gravitySelect">Select Celestial Body</label>

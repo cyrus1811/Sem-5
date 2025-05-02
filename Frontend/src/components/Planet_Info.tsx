@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-import { Planet } from '@/lib/types';
+import { Planet } from '@/types/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, useGLTF } from '@react-three/drei';
@@ -68,9 +68,11 @@ const TexturedModel = ({ gltfModel, thumbnail }: { gltfModel: string, thumbnail:
 
   useMemo(() => {
     scene.traverse((child) => {
-      if (child.isMesh) {
-        child.material.map = texture;
-        child.material.needsUpdate = true;
+      if (child instanceof THREE.Mesh) {
+        if (child.material instanceof THREE.MeshStandardMaterial) {
+          child.material.map = texture;
+          child.material.needsUpdate = true;
+        }
       }
     });
   }, [scene, texture]);

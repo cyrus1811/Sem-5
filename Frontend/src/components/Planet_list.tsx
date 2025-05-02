@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import { ChevronsUpDown, Trash2, X } from 'lucide-react';
-import { Planet, PlanetFilters } from '@/lib/types';
+import { Planet, PlanetFilters } from '@/types/types';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 

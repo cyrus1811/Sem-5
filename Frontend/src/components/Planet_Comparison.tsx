@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { ChevronsUpDown, X, Star, Orbit, Info } from 'lucide-react';
-import { Planet } from '@/lib/types';
+import { Planet } from '@/types/types';
 import { cn } from '@/lib/utils';
 
 const PlanetComparison: React.FC = () => {
@@ -29,7 +29,7 @@ const PlanetComparison: React.FC = () => {
         const planetNames = searchParams.get('planets')?.split(',') || [];
 
         // Filter planets based on URL parameters
-        const planetsToCompare = allPlanets.filter(planet =>
+        const planetsToCompare = allPlanets.filter((planet: Planet) =>
           planetNames.includes(planet.name)
         );
 
@@ -111,11 +111,17 @@ const PlanetComparison: React.FC = () => {
 
   // Comparative properties to display
 
-  const comparisonProperties = [
-    {
-      key: 'thumbnail',
-      label: 'Planet Visualization',
-      transform: (thumbnail: string, planet: Planet) => (
+  const comparisonProperties: {
+    key: string;
+    label: string;
+    icon?: JSX.Element;
+    transform: (value: any, planet: Planet) => JSX.Element | string;
+    colorGradient?: (value: any) => string;
+  }[] = [
+      {
+        key: 'thumbnail',
+        label: 'Planet Visualization',
+        transform: (thumbnail: string, planet: Planet) => (
         <div className="flex flex-col items-center">
           <img
             src={thumbnail}

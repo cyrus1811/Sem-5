@@ -1,32 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-
-// Define an interface for the news article structure that matches the API response
-interface NewsArticle {
-  year: string;
-  title: string;
-  description: string;
-  url?: string;
-}
-
-// Define the structure of the API response
-interface NewsApiResponse {
-  status: string;
-  totalResults: number;
-  articles: Array<{
-    source: {
-      id: string | null;
-      name: string;
-    };
-    author: string | null;
-    title: string;
-    description: string;
-    url: string;
-    urlToImage?: string;
-    publishedAt: string;
-    content: string;
-  }>;
-}
+import { NewsApiResponse, NewsArticle } from "@/types/types";
 
 const Discover = () => {
   const timelineRef = useRef<HTMLDivElement>(null);

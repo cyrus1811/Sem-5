@@ -12,13 +12,6 @@ body {
   color: #fff;
 }
 
-/*canvas {*/
-/*    position: fixed;*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    z-index: 1;*/
-/*}*/
-
 label {
   font-size: 0.875rem;
   color: #a0aec0;
@@ -88,6 +81,7 @@ button:active {
   font-weight: bold;
   background: linear-gradient(to right, #00f3ff, #8000ff);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   margin-bottom: 8px;
 }
