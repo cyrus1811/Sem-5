@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from schemas.schemas import PlanetPredictionInput, RadiationPredictionInput, GasPredictionInput, PlanetData, PlanetDataRequestModel, PlanetHabitabilityRequestModel
 from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
 import google.generativeai as genai
 
 load_dotenv()
@@ -224,47 +225,12 @@ def predict_habitability(input_data: PlanetHabitabilityRequestModel):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# class EnvironmentInput(BaseModel):
-#     co2: float
-#     temperature: float
-#     sunlight_intensity: float
-#     water_availability: float
-
-# model = None
-
-# @app.post("/simulate")
-# def simulate_environment(environment: EnvironmentInput):
-#     global model
-
-#     model = EcosystemModel(
-#         width=10,
-#         height=10,
-#         co2=environment.co2,
-#         temperature=environment.temperature,
-#         sunlight_intensity=environment.sunlight_intensity,
-#         water_availability=environment.water_availability
-#     )
-
-#     # Run one step of the simulation
-#     model.step()
-
-#     # Get the current state
-#     state = model.get_state()
-
-#     return JSONResponse(
-#         content={
-#             "environment": environment.model_dump(),
-#             "ecosystem_state": state
-#         }
-#     )
-
-# @app.get("/state")
-# def get_current_state():
-#     if model is None:
-#         return {"error": "No simulation has been run yet."}
+@app.get("/news")
+def get_news():
+    api_key_url = os.getenv("NEWS_API")
     
-#     # Get the current state of the model
-#     state = model.get_state()
-#     return {
-#         "ecosystem_state": state
-#     }
+    response = requests.get(api_key_url)
+    if response.status_code != 200:
+        return JSONResponse(status_code=response.status_code, content={"error": "Failed to fetch news"})
+    
+    return response.json()

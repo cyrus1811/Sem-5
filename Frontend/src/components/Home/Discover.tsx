@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { NewsApiResponse, NewsArticle } from "@/types/types";
+import axios from "axios";
 
 const Discover = () => {
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -12,13 +13,13 @@ const Discover = () => {
     const fetchNews = async () => {
       try {
         setLoading(true);
-        const response = await fetch(import.meta.env.VITE_NEWS_API);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/news`);
         
-        if (!response.ok) {
+        if (!response.data.ok) {
           throw new Error('Failed to fetch news');
         }
         
-        const data: NewsApiResponse = await response.json();
+        const data: NewsApiResponse = await response.data.json();
         
         // Check if we have articles in the response
         if (!data.articles || !Array.isArray(data.articles) || data.articles.length === 0) {
