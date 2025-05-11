@@ -2,16 +2,16 @@
 
 ## 🌌 Table of Contents
 
-- [Collaborators](#collaborators)
-- [Introduction](#introduction)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [How It Works](#how-it-works)
-- [Installation](#installation)
-- [Screenshots](#screenshots)
-- [Datasets and References](#datasets-and-references)
-- [Contributing](#contributing)
-- [License](#license)
+- [Collaborators](#-collaborators)
+- [Introduction](#-introduction)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [How It Works](#-how-it-works)
+- [Installation](#-installation)
+- [Screenshots](#-screenshots)
+- [Datasets and References](#-datasets-and-references)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ## 👨‍💻 Collaborators
 
